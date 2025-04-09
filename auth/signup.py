@@ -33,7 +33,7 @@ def signup(user_type: str):
             code = input("강사 인증코드를 입력하세요: ").strip()
             if code == INSTRUCTOR_CODE:
                 break
-            print("[오류] 올바른 인증 코드가 아닙니다.")
+            print("[오류] 올바른 인증 코드가 아닙니다.\n")
 
     # 아이디 입력 및 중복 확인
     while True:
@@ -44,7 +44,7 @@ def signup(user_type: str):
         print("───────────────────────────────────────")
         user_id = input("아이디를 입력하세요 >>").strip()
         if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', user_id):
-            print("[오류] 아이디 규칙에 맞지 않습니다.")
+            print("[오류] 아이디 규칙에 맞지 않습니다.\n")
             continue
 
         path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
@@ -52,7 +52,7 @@ def signup(user_type: str):
             with open(path, 'r', encoding='utf-8-sig') as f:
                 reader = csv.DictReader(f)
                 if any(row['아이디'] == user_id for row in reader):
-                    print("[오류] 동일한 아이디가 존재합니다.")
+                    print("[오류] 동일한 아이디가 존재합니다.\n")
                     continue
         break
 
@@ -65,7 +65,7 @@ def signup(user_type: str):
         print("───────────────────────────────────────")
         name = input("이름을 입력하세요 >>").strip()
         if not re.match(r'^[가-힣a-zA-Z]+$', name):
-            print("[오류] 이름 규칙에 맞지 않습니다.")
+            print("[오류] 이름 규칙에 맞지 않습니다.\n")
             continue
         break
 
@@ -78,7 +78,7 @@ def signup(user_type: str):
         print("───────────────────────────────────────")
         phone = input("전화번호를 입력하세요 >>").strip()
         if not re.match(r'^010\d{8}$', phone):
-            print("[오류] 전화번호 규칙에 맞지 않습니다.")
+            print("[오류] 전화번호 규칙에 맞지 않습니다.\n")
             continue
         break
 
@@ -91,7 +91,7 @@ def signup(user_type: str):
         print("───────────────────────────────────────")
         password = input("비밀번호를 입력하세요 >>").strip()
         if not is_valid_password(password):
-            print("[오류] 비밀번호 규칙에 맞지 않습니다.")
+            print("[오류] 비밀번호 규칙에 맞지 않습니다.\n")
             continue
         break
 
@@ -117,4 +117,4 @@ def signup(user_type: str):
             writer.writeheader()
         writer.writerow(data)
 
-    print("회원가입이 완료되었습니다.")
+    print("회원가입이 완료되었습니다.\n")
