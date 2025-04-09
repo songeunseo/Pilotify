@@ -2,8 +2,8 @@ import csv
 import os
 import re
 
-MEMBER_PATH = '../data/members.csv'
-INSTRUCTOR_PATH = '../data/instructor.csv'
+MEMBER_PATH = 'data/members.csv'
+INSTRUCTOR_PATH = 'data/instructor.csv'
 INSTRUCTOR_CODE = '0000'  # 강사 인증코드
 
 def is_valid_password(pw: str) -> bool:
