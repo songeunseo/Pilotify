@@ -23,7 +23,7 @@ Pilotify/
 ├── data/
 │   ├── members.csv              # 회원 정보 저장 (CSV 파일)
 │   ├── instructors.csv          # 강사 정보 저장 (CSV 파일)
-│   └── reservations.csv         # 예약 정보 저장 (CSV 파일)
+│   └── class.csv                # 수업 정보 저장 (CSV 파일)
 │
 ├── requirements.txt             # 프로젝트 의존성 목록
 ├── README.md                    # 프로젝트 설명 파일
