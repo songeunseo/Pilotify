@@ -21,8 +21,8 @@ Pilotify/
 │   └── file_handler.py           # 파일 읽기/쓰기 관련 처리
 │
 ├── data/
-│   ├── members.txt              # 회원 정보 저장 (TXT 파일)
-│   ├── instructors.txt          # 강사 정보 저장 (TXT 파일)
+│   ├── members.csv              # 회원 정보 저장 (CSV 파일)
+│   ├── instructors.csv          # 강사 정보 저장 (CSV 파일)
 │   └── reservations.csv         # 예약 정보 저장 (CSV 파일)
 │
 ├── requirements.txt             # 프로젝트 의존성 목록
