@@ -23,9 +23,9 @@ Pilotify/
 │   └── reservation_controller.py # 예약 관련 기능
 │
 ├── data/                       # 데이터 저장 디렉토리
-│   ├── members.txt            # 회원 정보 저장 (TXT 파일)
-│   ├── instructors.txt        # 강사 정보 저장 (TXT 파일)
-│   └── reservations.csv       # 예약 정보 저장 (CSV 파일)
+│   ├── members.csv            # 회원 정보 저장 (CSV 파일)
+│   ├── instructors.csv        # 강사 정보 저장 (CSV 파일)
+│   └── class.csv              # 수업 정보 저장 (CSV 파일)
 │
 ├── __init__.py                # 패키지 초기화
 ├── main.py                    # 메인 실행 파일
