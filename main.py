@@ -1,4 +1,4 @@
-from app.auth.signup import signup
+from auth.signup import signup
 
 def main():
     input("───────────────────────────────────────\n"
