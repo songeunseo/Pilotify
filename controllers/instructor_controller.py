@@ -2,12 +2,12 @@ import datetime as dt
 
 
 def register_class():
-    if :
-        print("")
-    elif :
-        print("[수업 등록]")
-        day = input()
-        day
+    # if :
+    #     print("")
+    # elif :
+    #     print("[수업 등록]")
+    #     day = input()
+    #     day
         return 0
 
 def check_class():

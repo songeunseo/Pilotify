@@ -5,14 +5,14 @@ import utils
 from app.constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
-from controllers.instructor_controller import instructor_main
-from controllers.member_controller import member_main
+from controllers.instructor_controller import instructor_menu
+# from controllers.member_controller import member_main
 
 
 def main():
     ## 제목 출력
-    views.prompt_menu_choice()
     views.print_title()
+    views.prompt_menu_choice()
       
     while True:
       ## 날짜와 시간 입력
@@ -64,13 +64,11 @@ def main():
 
 
         ## 회원가입
-        if main_choice == "1":
-          ## 회원 혹은 강사 객체 필요
+        if register_login_choice == "1":
           user = signup(user_type)
 
         ## 로그인 
-        elif main_choice == "2":
-          ## 회원 혹은 강사 객체 필요
+        elif register_login_choice == "2":
           user = login(user_type)
 
         ## 시작 메뉴로 돌아가기
@@ -80,11 +78,11 @@ def main():
 
         ## 강사 화면
         if user_type == USER_TYPE_INSTRUCTOR:
-          instructor_main(user)
+          instructor_menu(user)
 
         ## 회원 화면
-        elif user_type == USER_TYPE_MEMBER:
-           member_main(user)
+        # elif user_type == USER_TYPE_MEMBER:
+        #    member_main(user)
            
 if __name__ == '__main__':
     main()
