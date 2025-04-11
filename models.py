@@ -1,12 +1,11 @@
 #회원 정보 클래스 생성
-class MemberData:
+class Member:
     id : str
     pw : str
     name : str
     ph : str
-    tnum : int
 
-class InstructorData:
+class Instructor:
     id : str
     pw : str
     name : str
