@@ -97,8 +97,6 @@ def signup(user_type: str):
 
     # CSV 저장
     fieldnames = ['아이디', '비밀번호', '이름', '전화번호']
-    if not is_instructor:
-        fieldnames.append('수강권')
 
     data = {
         '아이디': user_id,
@@ -106,9 +104,6 @@ def signup(user_type: str):
         '이름': name,
         '전화번호': phone
     }
-
-    if not is_instructor:
-        data['수강권'] = 5  # 회원가입 시 기본 수강권
 
     file_exists = os.path.exists(path)
     with open(path, 'a', newline='', encoding='utf-8-sig') as f:
