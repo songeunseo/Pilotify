@@ -15,5 +15,5 @@ USER_TYPE_INSTRUCTOR = 'n'
 
 ##file_path
 MEMBER_PATH = 'data/members.csv'
-INSTRUCTOR_PATH = 'data/instructor.csv'
-CLASS_PATH = 'data/members.csv'
+INSTRUCTOR_PATH = 'data/instructors.csv'
+CLASS_PATH = 'data/class.csv'

@@ -1,10 +1,13 @@
-#회원 정보 클래스 생성
+from dataclasses import dataclass
+
+@dataclass
 class Member:
     id : str
     pw : str
     name : str
     ph : str
 
+@dataclass
 class Instructor:
     id : str
     pw : str
