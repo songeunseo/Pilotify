@@ -1,5 +1,10 @@
-from app.constants import SUCCESS, BASIC_ERROR
+import csv
+import re
+from app.constants import SUCCESS, BASIC_ERROR, GRAMMAR_ERROR, NO_DUPLICATION
+from app.constants import USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from datetime import datetime
+from models import Member, Instructor
+
 
 def validate_datetime_input(user_input: str) -> int:
     # 콤마가 정확히 한 개여야 함, 공백이 없어야 함
@@ -25,3 +30,12 @@ def validate_menu_choice(user_input: str, valid_choices: list[str]) -> bool:
     if user_input.isdigit() and user_input in valid_choices:
         return SUCCESS
     return BASIC_ERROR
+
+def validate_id(id: str, user_list: list):
+    if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', id):
+        return BASIC_ERROR, None
+    for user in user_list:
+        if user.id == id:
+            return SUCCESS, user
+    
+    return BASIC_ERROR, None
