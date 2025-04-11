@@ -1,28 +1,10 @@
 import csv
 import re
+from app.constants import SUCCESS, BASIC_ERROR, GRAMMAR_ERROR, NO_DUPLICATION
+from app.constants import MEMBER_PATH, INSTRUCTOR_PATH
 
-SUCCESS = 0
-BASIC_ERROR = -1
-GRAMMAR_ERROR = -2
-NO_DUPLICATION = -3
 
-MEMBER_PATH = 'data/members.csv'
-INSTRUCTOR_PATH = 'data/instructor.csv'
-CLASS_PATH = 'data/members.csv'
 
-#회원 정보 클래스 생성
-class Member_Data:
-    id : str
-    pw : str
-    name : str
-    ph : str
-    tnum : int
-
-class Instructor_Data:
-    id : str
-    pw : str
-    name : str
-    ph : str
 
 #회원 정보 객체 배열 선언
 member_data = []
