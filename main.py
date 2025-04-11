@@ -1,4 +1,4 @@
-from app import views
+import views
 from controllers import member_controller
 from models import Member
 import utils
