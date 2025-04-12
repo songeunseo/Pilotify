@@ -5,11 +5,12 @@ from utils import (
     validate_signup_id, validate_signup_name, validate_signup_phone,
     validate_signup_password, check_signup_duplicate_id
 )
+from models import Instructor, Member
 import views
 
 def verify_instructor_code():
     while True:
-        code = input("인증코드를 입력하세요 >> ").strip()
+        code = input("인증코드를 입력하세요 >>").strip()
         if code == INSTRUCTOR_CODE:
             break
         views.print_error("올바른 인증 코드가 아닙니다.")
@@ -64,7 +65,7 @@ def save_user_data(user_data: dict, is_instructor: bool):
             writer.writeheader()
         writer.writerow(user_data)
 
-def signup(user_type: str):
+def signup(user_type: str) -> Member | Instructor:
     is_instructor = user_type == USER_TYPE_INSTRUCTOR
 
     if is_instructor:
@@ -84,3 +85,7 @@ def signup(user_type: str):
 
     save_user_data(user_data, is_instructor)
     views.print_signup_complete()
+
+    if is_instructor:
+        return Instructor(id=user_id, pw=password, name=name, phone=phone)
+    return Member(id=user_id, pw=password, name=name, phone=phone)
