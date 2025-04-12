@@ -2,7 +2,7 @@ import views
 from controllers import member_controller
 from models import Member
 import utils
-from app.constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
+from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
 from controllers.instructor_controller import instructor_menu

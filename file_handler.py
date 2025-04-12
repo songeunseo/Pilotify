@@ -1,5 +1,5 @@
 import csv
-from app.constants import MEMBER_PATH, INSTRUCTOR_PATH
+from constants import MEMBER_PATH, INSTRUCTOR_PATH
 from models import Member, Instructor
 
 def load_member_data() -> list[Member]:

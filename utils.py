@@ -1,7 +1,7 @@
 import csv
 import re
-from app.constants import SUCCESS, BASIC_ERROR, GRAMMAR_ERROR, NO_DUPLICATION
-from app.constants import USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
+from constants import SUCCESS, BASIC_ERROR, GRAMMAR_ERROR, NO_DUPLICATION
+from constants import USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from datetime import datetime
 from models import Member, Instructor
 

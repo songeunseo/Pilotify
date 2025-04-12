@@ -1,5 +1,5 @@
 from models import Member, Instructor
-from app.constants import SUCCESS
+from constants import SUCCESS
 import utils
 import views
 import file_handler
