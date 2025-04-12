@@ -87,5 +87,5 @@ def signup(user_type: str) -> Member | Instructor:
     views.print_signup_complete()
 
     if is_instructor:
-        return Instructor(id=user_id, pw=password, name=name, phone=phone)
-    return Member(id=user_id, pw=password, name=name, phone=phone)
+        return Instructor(id=user_id, pw=password, name=name, ph=phone)
+    return Member(id=user_id, pw=password, name=name, ph=phone)
