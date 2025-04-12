@@ -1,6 +1,6 @@
 import csv
 import os
-from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE
+from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE, USER_TYPE_INSTRUCTOR
 from utils import (
     validate_signup_id, validate_signup_name, validate_signup_phone,
     validate_signup_password, check_signup_duplicate_id
@@ -9,8 +9,7 @@ import views
 
 def verify_instructor_code():
     while True:
-        views.print_instructor_code_prompt()
-        code = input().strip()
+        code = input("인증코드를 입력하세요 >> ").strip()
         if code == INSTRUCTOR_CODE:
             break
         views.print_error("올바른 인증 코드가 아닙니다.")
@@ -66,7 +65,7 @@ def save_user_data(user_data: dict, is_instructor: bool):
         writer.writerow(user_data)
 
 def signup(user_type: str):
-    is_instructor = user_type == '2'
+    is_instructor = user_type == USER_TYPE_INSTRUCTOR
 
     if is_instructor:
         verify_instructor_code()

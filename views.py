@@ -46,10 +46,6 @@ def print_error(message: str):
     """오류 메시지를 출력합니다."""
     print(f"[오류] {message}\n")
 
-def print_instructor_code_prompt():
-    print("───────────────────────────────────────")
-    print("강사 인증코드를 입력하세요: ")
-
 def print_user_id_rules():
     print("───────────────────────────────────────")
     print("[ 아이디 회원가입 규칙]")
@@ -80,4 +76,3 @@ def print_password_rules():
 
 def print_signup_complete():
     print("회원가입이 완료되었습니다.\n")
-
