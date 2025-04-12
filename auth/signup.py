@@ -1,26 +1,7 @@
 import csv
 import os
-import re
 from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE
-
-def is_valid_password(pw: str) -> bool:
-    # 기본 형식 확인: 대문자 시작, 허용 문자만, 길이 5~16자
-    if not re.match(r'^[A-Z][A-Za-z0-9!@#$%^&*]{4,15}$', pw):
-        return False
-
-    # 문자 조합 체크: 특수문자, 숫자, 영문 포함 여부
-    has_letter = re.search(r'[a-zA-Z]', pw)
-    has_number = re.search(r'[0-9]', pw)
-    has_special = re.search(r'[!@#$%^&*]', pw)
-
-    if not (has_letter and has_number and has_special):
-        return False
-
-    # 반복 문자 3회 이상 금지
-    if re.search(r'(.)\1\1', pw):  # 같은 문자가 3번 연속
-        return False
-
-    return True
+from utils import validate_user_id, validate_name, validate_phone, validate_password, check_duplicate_id
 
 def signup(user_type: str):
     is_instructor = user_type == '2'
@@ -40,17 +21,12 @@ def signup(user_type: str):
         print(" - 예시 입력: user123!")
         print("───────────────────────────────────────")
         user_id = input("아이디를 입력하세요 >>").strip()
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', user_id):
+        if not validate_user_id(user_id):
             print("[오류] 아이디 규칙에 맞지 않습니다.\n")
             continue
-
-        path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8-sig') as f:
-                reader = csv.DictReader(f)
-                if any(row['아이디'] == user_id for row in reader):
-                    print("[오류] 동일한 아이디가 존재합니다.\n")
-                    continue
+        if check_duplicate_id(user_id, is_instructor):
+            print("[오류] 동일한 아이디가 존재합니다.\n")
+            continue
         break
 
     # 이름 입력
@@ -61,7 +37,7 @@ def signup(user_type: str):
         print(" - 예시 입력: 조은영")
         print("───────────────────────────────────────")
         name = input("이름을 입력하세요 >>").strip()
-        if not re.match(r'^[가-힣a-zA-Z]+$', name):
+        if not validate_name(name):
             print("[오류] 이름 규칙에 맞지 않습니다.\n")
             continue
         break
@@ -74,7 +50,7 @@ def signup(user_type: str):
         print(" - 예시 입력: 01041026022")
         print("───────────────────────────────────────")
         phone = input("전화번호를 입력하세요 >>").strip()
-        if not re.match(r'^010\d{8}$', phone):
+        if not validate_phone(phone):
             print("[오류] 전화번호 규칙에 맞지 않습니다.\n")
             continue
         break
@@ -87,7 +63,7 @@ def signup(user_type: str):
         print(" - 예시 입력: A1bc3!")
         print("───────────────────────────────────────")
         password = input("비밀번호를 입력하세요 >>").strip()
-        if not is_valid_password(password):
+        if not validate_password(password):
             print("[오류] 비밀번호 규칙에 맞지 않습니다.\n")
             continue
         break
@@ -102,6 +78,7 @@ def signup(user_type: str):
         '전화번호': phone
     }
 
+    path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
     file_exists = os.path.exists(path)
     with open(path, 'a', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
