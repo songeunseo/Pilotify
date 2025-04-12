@@ -31,7 +31,7 @@ def validate_menu_choice(user_input: str, valid_choices: list[str]) -> bool:
         return SUCCESS
     return BASIC_ERROR
 
-def validate_id(id: str, user_list: list):
+def validate_login_id(id: str, user_list: list):
     if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', id):
         return BASIC_ERROR, None
     for user in user_list:
@@ -40,20 +40,20 @@ def validate_id(id: str, user_list: list):
     
     return BASIC_ERROR, None
 
-def validate_user_id(user_id: str) -> bool:
-    """아이디 유효성 검사"""
+def validate_signup_id(user_id: str) -> bool:
+    """회원가입 아이디 유효성 검사"""
     return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', user_id))
 
-def validate_name(name: str) -> bool:
-    """이름 유효성 검사"""
+def validate_signup_name(name: str) -> bool:
+    """회원가입 이름 유효성 검사"""
     return bool(re.match(r'^[가-힣a-zA-Z]+$', name))
 
-def validate_phone(phone: str) -> bool:
-    """전화번호 유효성 검사"""
+def validate_signup_phone(phone: str) -> bool:
+    """회원가입 전화번호 유효성 검사"""
     return bool(re.match(r'^010\d{8}$', phone))
 
-def validate_password(password: str) -> bool:
-    """비밀번호 유효성 검사"""
+def validate_signup_password(password: str) -> bool:
+    """회원가입 비밀번호 유효성 검사"""
     # 기본 형식 확인: 대문자 시작, 허용 문자만, 길이 5~16자
     if not re.match(r'^[A-Z][A-Za-z0-9!@#$%^&*]{4,15}$', password):
         return False
@@ -72,7 +72,15 @@ def validate_password(password: str) -> bool:
 
     return True
 
-def check_duplicate_id(user_id: str, is_instructor: bool) -> bool:
+def check_signup_duplicate_id(user_id: str, is_instructor: bool) -> bool:
+    """회원가입 아이디 중복 검사"""
+    path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
+    if os.path.exists(path):
+        with open(path, 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            return any(row['아이디'] == user_id for row in reader)
+    return False
+
     """아이디 중복 검사"""
     path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
     if os.path.exists(path):
