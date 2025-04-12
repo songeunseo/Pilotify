@@ -2,69 +2,55 @@ import csv
 import os
 from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE
 from utils import validate_user_id, validate_name, validate_phone, validate_password, check_duplicate_id
+import views
 
 def signup(user_type: str):
     is_instructor = user_type == '2'
 
     if is_instructor:
         while True:
-            code = input("강사 인증코드를 입력하세요: ").strip()
+            views.print_instructor_code_prompt()
+            code = input().strip()
             if code == INSTRUCTOR_CODE:
                 break
-            print("[오류] 올바른 인증 코드가 아닙니다.\n")
+            views.print_error_invalid_code()
 
     # 아이디 입력 및 중복 확인
     while True:
-        print("───────────────────────────────────────")
-        print("[ 아이디 회원가입 규칙]")
-        print(" - 5~16자, 영어/숫자/특수문자만 허용, 공백 불가, 영어로 시작해야 함")
-        print(" - 예시 입력: user123!")
-        print("───────────────────────────────────────")
+        views.print_user_id_rules()
         user_id = input("아이디를 입력하세요 >>").strip()
         if not validate_user_id(user_id):
-            print("[오류] 아이디 규칙에 맞지 않습니다.\n")
+            views.print_error_invalid_id()
             continue
         if check_duplicate_id(user_id, is_instructor):
-            print("[오류] 동일한 아이디가 존재합니다.\n")
+            views.print_error_duplicate_id()
             continue
         break
 
     # 이름 입력
     while True:
-        print("───────────────────────────────────────")
-        print("[ 이름 입력 규칙]")
-        print(" - 길이 1이상, 공백류 불가, 한글/영어만 허용")
-        print(" - 예시 입력: 조은영")
-        print("───────────────────────────────────────")
+        views.print_name_rules()
         name = input("이름을 입력하세요 >>").strip()
         if not validate_name(name):
-            print("[오류] 이름 규칙에 맞지 않습니다.\n")
+            views.print_error_invalid_name()
             continue
         break
 
     # 전화번호 입력
     while True:
-        print("───────────────────────────────────────")
-        print("[ 전화번호 입력 규칙]")
-        print(" - 010으로 시작하는 11자리 숫자, 공백 불가")
-        print(" - 예시 입력: 01041026022")
-        print("───────────────────────────────────────")
+        views.print_phone_rules()
         phone = input("전화번호를 입력하세요 >>").strip()
         if not validate_phone(phone):
-            print("[오류] 전화번호 규칙에 맞지 않습니다.\n")
+            views.print_error_invalid_phone()
             continue
         break
 
     # 비밀번호 입력
     while True:
-        print("───────────────────────────────────────")
-        print("[ 비밀번호 입력 규칙]")
-        print(" - 5~16자, 대문자로 시작, 특수문자+영어+숫자 포함, 반복문자 3회 이상 금지)")
-        print(" - 예시 입력: A1bc3!")
-        print("───────────────────────────────────────")
+        views.print_password_rules()
         password = input("비밀번호를 입력하세요 >>").strip()
         if not validate_password(password):
-            print("[오류] 비밀번호 규칙에 맞지 않습니다.\n")
+            views.print_error_invalid_password()
             continue
         break
 
@@ -86,4 +72,4 @@ def signup(user_type: str):
             writer.writeheader()
         writer.writerow(data)
 
-    print("회원가입이 완료되었습니다.\n")
+    views.print_signup_complete()
