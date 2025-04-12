@@ -42,6 +42,10 @@ def print_login():
     print("[로그인]\n")
     print("───────────────────────────────────────\n")
 
+def print_error(message: str):
+    """오류 메시지를 출력합니다."""
+    print(f"[오류] {message}\n")
+
 def print_instructor_code_prompt():
     print("───────────────────────────────────────")
     print("강사 인증코드를 입력하세요: ")
@@ -76,22 +80,4 @@ def print_password_rules():
 
 def print_signup_complete():
     print("회원가입이 완료되었습니다.\n")
-
-def print_error_invalid_code():
-    print("[오류] 올바른 인증 코드가 아닙니다.\n")
-
-def print_error_invalid_id():
-    print("[오류] 아이디 규칙에 맞지 않습니다.\n")
-
-def print_error_duplicate_id():
-    print("[오류] 동일한 아이디가 존재합니다.\n")
-
-def print_error_invalid_name():
-    print("[오류] 이름 규칙에 맞지 않습니다.\n")
-
-def print_error_invalid_phone():
-    print("[오류] 전화번호 규칙에 맞지 않습니다.\n")
-
-def print_error_invalid_password():
-    print("[오류] 비밀번호 규칙에 맞지 않습니다.\n")
 

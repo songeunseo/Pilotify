@@ -13,17 +13,17 @@ def verify_instructor_code():
         code = input().strip()
         if code == INSTRUCTOR_CODE:
             break
-        views.print_error_invalid_code()
+        views.print_error("올바른 인증 코드가 아닙니다.")
 
 def get_user_id(is_instructor: bool) -> str:
     while True:
         views.print_user_id_rules()
         user_id = input("아이디를 입력하세요 >>").strip()
         if not validate_signup_id(user_id):
-            views.print_error_invalid_id()
+            views.print_error("아이디 규칙에 맞지 않습니다.")
             continue
         if check_signup_duplicate_id(user_id, is_instructor):
-            views.print_error_duplicate_id()
+            views.print_error("동일한 아이디가 존재합니다.")
             continue
         return user_id
 
@@ -32,7 +32,7 @@ def get_name() -> str:
         views.print_name_rules()
         name = input("이름을 입력하세요 >>").strip()
         if not validate_signup_name(name):
-            views.print_error_invalid_name()
+            views.print_error("이름 규칙에 맞지 않습니다.")
             continue
         return name
 
@@ -41,7 +41,7 @@ def get_phone() -> str:
         views.print_phone_rules()
         phone = input("전화번호를 입력하세요 >>").strip()
         if not validate_signup_phone(phone):
-            views.print_error_invalid_phone()
+            views.print_error("전화번호 규칙에 맞지 않습니다.")
             continue
         return phone
 
@@ -50,7 +50,7 @@ def get_password() -> str:
         views.print_password_rules()
         password = input("비밀번호를 입력하세요 >>").strip()
         if not validate_signup_password(password):
-            views.print_error_invalid_password()
+            views.print_error("비밀번호 규칙에 맞지 않습니다.")
             continue
         return password
 
