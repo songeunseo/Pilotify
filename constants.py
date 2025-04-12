@@ -17,3 +17,6 @@ USER_TYPE_INSTRUCTOR = 'n'
 MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
 CLASS_PATH = 'data/class.csv'
+
+## Instructor auth code
+INSTRUCTOR_CODE = '0000'
