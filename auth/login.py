@@ -18,7 +18,7 @@ def login(user_type: str):
         elif user_type == Instructor:
             user_list = instructor_list
             
-        res, user = utils.validate_id(id, user_list)
+        res, user = utils.validate_login_id(id, user_list)
 
         if res == SUCCESS:
             break

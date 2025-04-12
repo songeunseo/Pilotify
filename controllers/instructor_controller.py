@@ -1,5 +1,5 @@
 import datetime as dt
-
+from models import Instructor
 
 def register_class():
     # if :
@@ -13,7 +13,7 @@ def register_class():
 def check_class():
     return 0
 
-def instructor_menu():
+def instructor_menu(instructor: Instructor):
 
     while True:
         i = input()
