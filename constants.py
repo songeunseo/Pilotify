@@ -18,5 +18,7 @@ MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
 CLASS_PATH = 'data/class.csv'
 
+MAX_CLASSES_PER_INSTRUCTOR = 3
+
 ## Instructor auth code
 INSTRUCTOR_CODE = '0000'

@@ -1,13 +1,10 @@
 import views
-from controllers import member_controller
-from models import Member
 import utils
 from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
-from controllers.instructor_controller import instructor_menu
-# from controllers.member_controller import member_main
-
+from models import CurrentDateTime
+import context
 
 def main():
     ## 제목 출력
@@ -15,19 +12,22 @@ def main():
     views.prompt_menu_choice()
       
     while True:
-      ## 날짜와 시간 입력
-      views.print_date_time()
-      datetime_str = views.prompt_date_time()
-      
-      ## 입력 처리
-      datetime_check = utils.validate_datetime_input(datetime_str)
-      date_str, time_str = datetime_str.split(',')
-      
-      ## 날짜와 시간 저장 필요
-      
-      if datetime_check == SUCCESS: 
+        ## 날짜와 시간 입력
+        views.print_date_time()
+        datetime_str = views.prompt_date_time()
+        
+        ## 입력 처리
+        datetime_check = utils.validate_datetime_input(datetime_str)
+        if datetime_check != SUCCESS: 
+            print("[오류] 날짜 시간 규칙에 맞지 않습니다.")
+            continue
+
+        ## 날짜와 시간 저장
+        context.current_datetime = CurrentDateTime(datetime_str)
         break
-      print("[오류] 날짜 시간 규칙에 맞지 않습니다.")
+
+    # current_datetime이 설정된 후에 instructor_controller를 import
+    from controllers.instructor_controller import show_instructor_menu
             
     while True: 
         while True: 
@@ -74,11 +74,10 @@ def main():
         ## 시작 메뉴로 돌아가기
         else:
           continue
-        
 
         ## 강사 화면
         if user_type == USER_TYPE_INSTRUCTOR:
-          instructor_menu(user)
+          show_instructor_menu(user)
 
         ## 회원 화면
         # elif user_type == USER_TYPE_MEMBER:

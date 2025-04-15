@@ -22,10 +22,21 @@ def load_instructor_data() -> list[Instructor]:
         reader = csv.DictReader(csvfile)
         for row in reader:
             instructor = Instructor(
-                id=row['id'],
-                pw=row['pw'],
-                name=row['name'],
-                ph=row['ph']
+                id=row['아이디'],
+                pw=row['비밀번호'],
+                name=row['이름'],
+                ph=row['전화번호']
             )
             instructor_data.append(instructor)
     return instructor_data
+
+def read_csv(filepath):
+    with open(filepath, newline='', encoding='utf-8') as f:
+        return list(csv.DictReader(f))
+
+def write_csv(filepath, data):
+    with open(filepath, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=data[0].keys())
+        writer.writeheader()
+        writer.writerows(data)
+
