@@ -4,7 +4,7 @@ from file_handler import read_csv, write_csv
 from utils import *
 from constants import *
 from models import Instructor
-from context import current_datetime
+import context
 
 def show_instructor_menu(instructor: Instructor):
     while True:
@@ -44,7 +44,7 @@ def register_class(instructor: Instructor):
 
         try:
             date_obj = datetime.strptime(date_input, "%y%m%d")
-            if date_obj.date() < current_datetime.get_date():
+            if date_obj.date() <= context.get_current_datetime().get_date():
                 print("[오류] 이미 지난 날짜입니다.\n")
                 continue
         except ValueError:
