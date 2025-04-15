@@ -1,9 +1,10 @@
 import views
 import utils
-from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER, current_datetime
+from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
 from controllers.instructor_controller import show_instructor_menu
+from context import current_datetime
 from models import CurrentDateTime
 
 def main():

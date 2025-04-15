@@ -4,7 +4,7 @@ from file_handler import read_csv, write_csv
 from utils import *
 from constants import *
 from models import Instructor
-from constants import current_datetime
+from context import current_datetime
 
 def show_instructor_menu(instructor: Instructor):
     while True:
