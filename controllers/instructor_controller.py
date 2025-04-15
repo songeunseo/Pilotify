@@ -75,14 +75,14 @@ def register_class(instructor: Instructor):
             continue
         break
 
-    new_id = f"{int(classes[-1]['ID']) + 1:04d}" if classes else "0000"
+    new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0000"
     new_class = {
-        "ID": new_id,
+        "아이디": new_id,
         "날짜": date_input,
-        "이름": instructor.name,
+        "강사 id": instructor.id,
         "타임": time_input,
         "정원": capacity,
-        "신청인원": "0"
+        "수강 회원 id 리스트": ""
     }
     classes.append(new_class)
     write_csv(CLASS_PATH, classes)
