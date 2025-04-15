@@ -6,9 +6,6 @@ from constants import *
 from models import Instructor
 from views import input_with_prompt, print_table
 
-CLASS_PATH = "data/class.csv"
-MAX_CLASSES_PER_INSTRUCTOR = 3
-
 def show_instructor_menu(instructor: Instructor):
     while True:
         print("───────────────────────────────────────")
@@ -31,7 +28,7 @@ def show_instructor_menu(instructor: Instructor):
 
 def register_class(instructor: Instructor):
     classes = read_csv(CLASS_PATH)
-    my_classes = [c for c in classes if c['이름'] == instructor.name]
+    my_classes = [c for c in classes if c['아이디'] == instructor.id]
     if len(my_classes) >= MAX_CLASSES_PER_INSTRUCTOR:
         print("[오류] 등록 가능한 수업 개수를 초과했습니다.\n")
         return
@@ -79,7 +76,7 @@ def register_class(instructor: Instructor):
             continue
         break
 
-    new_id = f"{int(classes[-1]['ID']) + 1:04d}" if classes else "0001"
+    new_id = f"{int(classes[-1]['ID']) + 1:04d}" if classes else "0000"
     new_class = {
         "ID": new_id,
         "날짜": date_input,
@@ -94,12 +91,12 @@ def register_class(instructor: Instructor):
 
 def view_classes(instructor: Instructor):
     classes = read_csv(CLASS_PATH)
-    my_classes = [c for c in classes if c['이름'] == instructor.name]
+    my_classes = [c for c in classes if c['아이디'] == instructor.id]
     
     print("\n───────────────────────────────────────")
     print("  수업 ID  |    날짜    |   이름   |     타임      |  정원  |  신청 인원  ")
     print("───────────────────────────────────────")
     for c in my_classes:
-        print(f"  {c['ID']:>4}     {c['날짜']}     {c['이름']}     {c['타임']:>2}       {c['정원']:>2}       {c['신청인원']:>2}")
+        print(f"  {c['아이디']:>4}     {c['날짜']}     {instructor.name}     {c['타임']:>2}       {c['정원']:>2}       {len(c['수강 회원 id'])}")
     print("───────────────────────────────────────")
     input("아무 키나 누르면 메뉴 화면으로 돌아갑니다 >> ")
