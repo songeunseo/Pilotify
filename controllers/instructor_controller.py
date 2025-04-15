@@ -75,7 +75,7 @@ def register_class(instructor: Instructor):
             continue
         break
 
-    new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0000"
+    new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0001"
     new_class = {
         "아이디": new_id,
         "날짜": date_input,
