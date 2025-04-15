@@ -51,7 +51,7 @@ def register_class(instructor: Instructor):
             continue
         break
 
-    time_table = [f"타임 {i:02d}: {8+i}:00~{8+i}:50" for i in range(15)]
+    time_table = [f"타임 {i:02d}: {8+i:02d}:00~{8+i:02d}:50" for i in range(15)]
     print("\n───────────────────────────────────────")
     print("[ 수업 등록 ]")
     for t in time_table:
