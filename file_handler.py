@@ -39,3 +39,4 @@ def write_csv(filepath, data):
         writer = csv.DictWriter(f, fieldnames=data[0].keys())
         writer.writeheader()
         writer.writerows(data)
+
