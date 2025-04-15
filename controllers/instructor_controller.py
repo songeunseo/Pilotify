@@ -90,12 +90,16 @@ def register_class(instructor: Instructor):
 
 def view_classes(instructor: Instructor):
     classes = read_csv(CLASS_PATH)
-    my_classes = [c for c in classes if c['아이디'] == instructor.id]
+    my_classes = [c for c in classes if c['강사 id'] == instructor.id]
+    
+    # 날짜순으로 정렬
+    my_classes.sort(key=lambda x: x['날짜'])
     
     print("\n───────────────────────────────────────")
-    print("  수업 ID  |    날짜    |   이름   |     타임      |  정원  |  신청 인원  ")
+    print("  수업 ID  |    날짜    |   이름   |     타임      |  정원  |  신청 인원  |")
     print("───────────────────────────────────────")
     for c in my_classes:
-        print(f"  {c['아이디']:>4}     {c['날짜']}     {instructor.name}     {c['타임']:>2}       {c['정원']:>2}       {len(c['수강 회원 id'])}")
+        time = f"{int(c['타임'])+8:02d}:00-{int(c['타임'])+8:02d}:50"  # 타임을 실제 시간으로 변환
+        print(f"   {c['아이디']:>4}     {c['날짜']}     {instructor.name}     {time}       {c['정원']:>2}             {len(c['수강 회원 id 리스트'].split(',')) if c['수강 회원 id 리스트'] else 0}")
     print("───────────────────────────────────────")
     input("아무 키나 누르면 메뉴 화면으로 돌아갑니다 >> ")
