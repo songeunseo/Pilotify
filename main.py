@@ -4,8 +4,12 @@ from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
 from controllers.instructor_controller import show_instructor_menu
+from models import CurrentDateTime
+
+current_datetime = None  # 전역변수 선언
 
 def main():
+    global current_datetime  # 전역 변수 사용 선언
     ## 제목 출력
     views.print_title()
     views.prompt_menu_choice()
@@ -17,13 +21,13 @@ def main():
       
       ## 입력 처리
       datetime_check = utils.validate_datetime_input(datetime_str)
-      date_str, time_str = datetime_str.split(',')
-      
-      ## 날짜와 시간 저장 필요
-      
-      if datetime_check == SUCCESS: 
-        break
-      print("[오류] 날짜 시간 규칙에 맞지 않습니다.")
+      if datetime_check != SUCCESS: 
+        print("[오류] 날짜 시간 규칙에 맞지 않습니다.")
+        continue
+
+      ## 날짜와 시간 저장
+      current_datetime = CurrentDateTime(datetime_str)
+      break
             
     while True: 
         while True: 
