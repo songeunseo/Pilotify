@@ -1,120 +1,91 @@
 import csv
 import os
-import re
+from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE, USER_TYPE_INSTRUCTOR
+from utils import (
+    validate_signup_id, validate_signup_name, validate_signup_phone,
+    validate_signup_password, check_signup_duplicate_id
+)
+from models import Instructor, Member
+import views
 
-MEMBER_PATH = 'data/members.csv'
-INSTRUCTOR_PATH = 'data/instructor.csv'
-INSTRUCTOR_CODE = '0000'  # 강사 인증코드
+def verify_instructor_code():
+    while True:
+        code = input("인증코드를 입력하세요 >>").strip()
+        if code == INSTRUCTOR_CODE:
+            break
+        views.print_error("올바른 인증 코드가 아닙니다.")
 
-def is_valid_password(pw: str) -> bool:
-    # 기본 형식 확인: 대문자 시작, 허용 문자만, 길이 5~16자
-    if not re.match(r'^[A-Z][A-Za-z0-9!@#$%^&*]{4,15}$', pw):
-        return False
+def get_user_id(is_instructor: bool) -> str:
+    while True:
+        views.print_user_id_rules()
+        user_id = input("아이디를 입력하세요 >>").strip()
+        if not validate_signup_id(user_id):
+            views.print_error("아이디 규칙에 맞지 않습니다.")
+            continue
+        if check_signup_duplicate_id(user_id, is_instructor):
+            views.print_error("동일한 아이디가 존재합니다.")
+            continue
+        return user_id
 
-    # 문자 조합 체크: 특수문자, 숫자, 영문 포함 여부
-    has_letter = re.search(r'[a-zA-Z]', pw)
-    has_number = re.search(r'[0-9]', pw)
-    has_special = re.search(r'[!@#$%^&*]', pw)
+def get_name() -> str:
+    while True:
+        views.print_name_rules()
+        name = input("이름을 입력하세요 >>").strip()
+        if not validate_signup_name(name):
+            views.print_error("이름 규칙에 맞지 않습니다.")
+            continue
+        return name
 
-    if not (has_letter and has_number and has_special):
-        return False
+def get_phone() -> str:
+    while True:
+        views.print_phone_rules()
+        phone = input("전화번호를 입력하세요 >>").strip()
+        if not validate_signup_phone(phone):
+            views.print_error("전화번호 규칙에 맞지 않습니다.")
+            continue
+        return phone
 
-    # 반복 문자 3회 이상 금지
-    if re.search(r'(.)\1\1', pw):  # 같은 문자가 3번 연속
-        return False
+def get_password() -> str:
+    while True:
+        views.print_password_rules()
+        password = input("비밀번호를 입력하세요 >>").strip()
+        if not validate_signup_password(password):
+            views.print_error("비밀번호 규칙에 맞지 않습니다.")
+            continue
+        return password
 
-    return True
+def save_user_data(user_data: dict, is_instructor: bool):
+    fieldnames = ['아이디', '비밀번호', '이름', '전화번호']
+    path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
+    
+    file_exists = os.path.exists(path)
+    with open(path, 'a', newline='', encoding='utf-8-sig') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        if not file_exists:
+            writer.writeheader()
+        writer.writerow(user_data)
 
-def signup(user_type: str):
-    is_instructor = user_type == '2'
+def signup(user_type: str) -> Member | Instructor:
+    is_instructor = user_type == USER_TYPE_INSTRUCTOR
 
     if is_instructor:
-        while True:
-            code = input("강사 인증코드를 입력하세요: ").strip()
-            if code == INSTRUCTOR_CODE:
-                break
-            print("[오류] 올바른 인증 코드가 아닙니다.\n")
+        verify_instructor_code()
 
-    # 아이디 입력 및 중복 확인
-    while True:
-        print("───────────────────────────────────────")
-        print("[ 아이디 회원가입 규칙]")
-        print(" - 5~16자, 영어/숫자/특수문자만 허용, 공백 불가, 영어로 시작해야 함")
-        print(" - 예시 입력: user123!")
-        print("───────────────────────────────────────")
-        user_id = input("아이디를 입력하세요 >>").strip()
-        if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', user_id):
-            print("[오류] 아이디 규칙에 맞지 않습니다.\n")
-            continue
+    user_id = get_user_id(is_instructor)
+    name = get_name()
+    phone = get_phone()
+    password = get_password()
 
-        path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
-        if os.path.exists(path):
-            with open(path, 'r', encoding='utf-8-sig') as f:
-                reader = csv.DictReader(f)
-                if any(row['아이디'] == user_id for row in reader):
-                    print("[오류] 동일한 아이디가 존재합니다.\n")
-                    continue
-        break
-
-    # 이름 입력
-    while True:
-        print("───────────────────────────────────────")
-        print("[ 이름 입력 규칙]")
-        print(" - 길이 1이상, 공백류 불가, 한글/영어만 허용")
-        print(" - 예시 입력: 조은영")
-        print("───────────────────────────────────────")
-        name = input("이름을 입력하세요 >>").strip()
-        if not re.match(r'^[가-힣a-zA-Z]+$', name):
-            print("[오류] 이름 규칙에 맞지 않습니다.\n")
-            continue
-        break
-
-    # 전화번호 입력
-    while True:
-        print("───────────────────────────────────────")
-        print("[ 전화번호 입력 규칙]")
-        print(" - 010으로 시작하는 11자리 숫자, 공백 불가")
-        print(" - 예시 입력: 01041026022")
-        print("───────────────────────────────────────")
-        phone = input("전화번호를 입력하세요 >>").strip()
-        if not re.match(r'^010\d{8}$', phone):
-            print("[오류] 전화번호 규칙에 맞지 않습니다.\n")
-            continue
-        break
-
-    # 비밀번호 입력
-    while True:
-        print("───────────────────────────────────────")
-        print("[ 비밀번호 입력 규칙]")
-        print(" - 5~16자, 대문자로 시작, 특수문자+영어+숫자 포함, 반복문자 3회 이상 금지)")
-        print(" - 예시 입력: A1bc3!")
-        print("───────────────────────────────────────")
-        password = input("비밀번호를 입력하세요 >>").strip()
-        if not is_valid_password(password):
-            print("[오류] 비밀번호 규칙에 맞지 않습니다.\n")
-            continue
-        break
-
-    # CSV 저장
-    fieldnames = ['아이디', '비밀번호', '이름', '전화번호']
-    if not is_instructor:
-        fieldnames.append('수강권')
-
-    data = {
+    user_data = {
         '아이디': user_id,
         '비밀번호': password,
         '이름': name,
         '전화번호': phone
     }
 
-    if not is_instructor:
-        data['수강권'] = 5  # 회원가입 시 기본 수강권
+    save_user_data(user_data, is_instructor)
+    views.print_signup_complete()
 
-    file_exists = os.path.exists(path)
-    with open(path, 'a', newline='', encoding='utf-8-sig') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        if not file_exists:
-            writer.writeheader()
-        writer.writerow(data)
-
-    print("회원가입이 완료되었습니다.\n")
+    if is_instructor:
+        return Instructor(id=user_id, pw=password, name=name, ph=phone)
+    return Member(id=user_id, pw=password, name=name, ph=phone)
