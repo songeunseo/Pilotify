@@ -27,7 +27,7 @@ def show_instructor_menu(instructor: Instructor):
 
 def register_class(instructor: Instructor):
     classes = read_csv(CLASS_PATH)
-    my_classes = [c for c in classes if c['아이디'] == instructor.id]
+    my_classes = [c for c in classes if c['강사 id'] == instructor.id]
     if len(my_classes) >= MAX_CLASSES_PER_INSTRUCTOR:
         print("[오류] 등록 가능한 수업 개수를 초과했습니다.\n")
         return
