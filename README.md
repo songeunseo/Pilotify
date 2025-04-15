@@ -5,7 +5,7 @@
 
 - `main` 브랜치는 보호되어 있어 직접 push 시도 시 거부됨
 - 모든 작업은 **새 브랜치 생성 → Pull Request로 병합**
-- PR은 리뷰 없이도 바로 머지 가능 (승인 생략)
+- PR은 최소 1명의 Approve 후 병합 가능
 - 커밋 메시지는 [Gitmoji](https://gitmoji.dev/) 스타일 또는 `feat:`, `fix:` 등 prefix 사용 권장
 
 ## 📌 프로젝트 구조
