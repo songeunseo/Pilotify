@@ -1,3 +1,6 @@
+# 전역 변수 선언
+current_datetime = None
+
 ## 성공
 SUCCESS = 0
 

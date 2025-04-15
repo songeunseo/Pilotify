@@ -1,12 +1,10 @@
 import views
 import utils
-from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
+from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER, current_datetime
 from auth.signup import signup
 from auth.login import login
 from controllers.instructor_controller import show_instructor_menu
 from models import CurrentDateTime
-
-current_datetime = None  # 전역변수 선언
 
 def main():
     global current_datetime  # 전역 변수 사용 선언
