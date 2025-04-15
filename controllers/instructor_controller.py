@@ -4,7 +4,6 @@ from file_handler import read_csv, write_csv
 from utils import *
 from constants import *
 from models import Instructor
-from views import input_with_prompt, print_table
 
 def show_instructor_menu(instructor: Instructor):
     while True:
