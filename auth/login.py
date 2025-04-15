@@ -3,6 +3,7 @@ from constants import SUCCESS
 import utils
 import sys
 import os
+from constants import USER_TYPE_MEMBER, USER_TYPE_INSTRUCTOR
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import views
@@ -17,9 +18,9 @@ def login(user_type: str):
         views.print_login()
         id = views.prompt_id()
 
-        if user_type == Member:
+        if user_type == USER_TYPE_MEMBER:
             user_list = member_list
-        elif user_type == Instructor:
+        elif user_type == USER_TYPE_INSTRUCTOR:
             user_list = instructor_list
             
         res, user = utils.validate_login_id(id, user_list)
