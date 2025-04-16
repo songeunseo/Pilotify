@@ -82,7 +82,8 @@ def main():
 
         ## 회원 화면
         elif user_type == USER_TYPE_MEMBER:
-           system = MemberSystem(user.id, context. get_current_datetime())
+           current_ymdhm = int(context.current_datetime.datetime_obj.strftime("%y%m%d%H%M"))
+           system = MemberSystem(user.id, current_ymdhm)
            system.show_menu()
            
 if __name__ == '__main__':
