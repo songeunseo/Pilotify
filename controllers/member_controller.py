@@ -161,7 +161,7 @@ class MemberSystem:
 
     def save_classes_to_csv(self, path):
         with open(path, 'w', newline='', encoding='utf-8') as csvfile:
-            fieldnames = ['아이디', '날짜', '타임', '강사 id', '수강 회원 id 리스트', '정원']
+            fieldnames = ['아이디', '날짜', '타임', '강사 id', '정원', '수강 회원 id 리스트']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for c in self.class_list:
@@ -170,8 +170,8 @@ class MemberSystem:
                     '날짜': c.date,
                     '타임': f"{c.time:02}",  # 항상 두 자리 시간으로
                     '강사 id': c.teacher_id,
-                    '수강 회원 id 리스트': ",".join(c.enrolled_user_ids),
-                    '정원': c.capacity
+                    '정원': c.capacity,
+                    '수강 회원 id 리스트': ",".join(c.enrolled_user_ids)
                 })
 '''
 if __name__ == "__main__":
