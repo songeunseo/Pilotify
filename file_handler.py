@@ -29,6 +29,7 @@ def load_instructor_data() -> list[Instructor]:
             )
             instructor_data.append(instructor)
     return instructor_data
+    
 
 def read_csv(filepath):
     with open(filepath, newline='', encoding='utf-8') as f:
