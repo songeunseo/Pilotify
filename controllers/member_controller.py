@@ -152,7 +152,7 @@ class MemberSystem:
         found = False
         for c in self.class_list:
             if self.username in c.enrolled_user_ids:
-                print(f"{c.session_id:<8} {c.date:<10} {c.time:<6} {c.teacher_id:<10}")
+                print(c.__str__())
                 found = True
         if not found:
             print("신청한 수업이 없습니다.")
