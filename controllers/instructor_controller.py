@@ -32,24 +32,19 @@ def register_class(instructor: Instructor, current_datetime: datetime):
         print("[오류] 등록 가능한 수업 개수를 초과했습니다.\n")
         return
 
-    while True:
-        print("\n───────────────────────────────────────")
-        print("[ 수업 등록 ]")
-        print("───────────────────────────────────────")
-        date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ").strip()
-        if not re.match(r'^\d{6}$', date_input):
-            print("[오류] 날짜 형식에 맞지 않습니다.\n")
+    print("\n───────────────────────────────────────")
+    print("[ 수업 등록 ]")
+    print("───────────────────────────────────────")
+    date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ").strip()
+    
+    try:
+        date_obj = datetime.strptime(date_input, "%y%m%d")
+        if date_obj.date() <= current_datetime.date():
+            print("[오류] 이미 지난 날짜입니다.\n")
             return
-
-        try:
-            date_obj = datetime.strptime(date_input, "%y%m%d")
-            if date_obj.date() <= current_datetime.date():
-                print("[오류] 이미 지난 날짜입니다.\n")
-                return
-        except ValueError:
-            print("[오류] 날짜 형식에 맞지 않습니다.\n")
-            return
-        break
+    except ValueError:
+        print("[오류] 날짜 형식에 맞지 않습니다.\n")
+        return
 
     time_table = [f"타임 {i:02d}: {8+i:02d}:00~{8+i:02d}:50" for i in range(15)]
     print("\n───────────────────────────────────────")
