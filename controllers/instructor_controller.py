@@ -28,8 +28,8 @@ def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
 def register_class(instructor: Instructor, current_datetime: datetime):
     classes = read_csv(CLASS_PATH)
     my_classes = [c for c in classes if c['강사 id'] == instructor.id]
-    if len(my_classes) >= MAX_CLASSES_PER_INSTRUCTOR:
-        print("[오류] 등록 가능한 수업 개수를 초과했습니다.\n")
+    if classes and int(classes[-1]['아이디']) >= 9999:
+        print("[오류] 등록 가능한 수업 개수가 4자리를 초과하였습니다.\n")
         return
 
     print("\n───────────────────────────────────────")

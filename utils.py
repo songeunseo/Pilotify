@@ -80,11 +80,3 @@ def check_signup_duplicate_id(user_id: str, is_instructor: bool) -> bool:
             reader = csv.DictReader(f)
             return any(row['아이디'] == user_id for row in reader)
     return False
-
-    """아이디 중복 검사"""
-    path = INSTRUCTOR_PATH if is_instructor else MEMBER_PATH
-    if os.path.exists(path):
-        with open(path, 'r', encoding='utf-8-sig') as f:
-            reader = csv.DictReader(f)
-            return any(row['아이디'] == user_id for row in reader)
-    return False
