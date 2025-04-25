@@ -108,27 +108,26 @@ class MemberSystem:
             print("[오류] 신청한 수업이 없습니다.")
             return
 
-        while True: 
-            print("───────────────────────────────────────────────")
-            print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
-            for c in applied_classes:
-                print(c.__str__())
-            print("───────────────────────────────────────────────")
+        print("───────────────────────────────────────────────")
+        print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
+        for c in applied_classes:
+            print(c.__str__())
+        print("───────────────────────────────────────────────")
 
-            session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
-            if not re.match(r'^\d{4}$', session_id):
-                print("[오류] 수업 ID 형식에 맞지 않습니다.")
-                return
-                
-            target = next((c for c in applied_classes if c.session_id == session_id), None)
-            if not target:
-                print("[오류] 신청한 수업이 아닙니다.")
-                return
-
-            target.enrolled_user_ids.remove(self.username)
-            self.save_classes_to_csv("data/class.csv") 
-            print("취소되었습니다.")
+        session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
+        if not re.match(r'^\d{4}$', session_id):
+            print("[오류] 수업 ID 형식에 맞지 않습니다.")
             return
+            
+        target = next((c for c in applied_classes if c.session_id == session_id), None)
+        if not target:
+            print("[오류] 신청한 수업이 아닙니다.")
+            return
+
+        target.enrolled_user_ids.remove(self.username)
+        self.save_classes_to_csv("data/class.csv") 
+        print("취소되었습니다.")
+        return
 
     def view_enrollments(self):
         print("───────────────────────────────────────────────")
