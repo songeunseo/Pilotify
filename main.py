@@ -3,8 +3,7 @@ import utils
 from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
 from auth.signup import signup
 from auth.login import login
-from models import CurrentDateTime
-import context
+from datetime import datetime
 from controllers.member_controller import MemberSystem
 
 def main():
@@ -24,7 +23,7 @@ def main():
             continue
 
         ## 날짜와 시간 저장
-        context.current_datetime = CurrentDateTime(datetime_str)
+        current_datetime = datetime.strptime(datetime_str, "%y%m%d,%H:%M")
         break
 
     # current_datetime이 설정된 후에 instructor_controller를 import
@@ -78,12 +77,11 @@ def main():
 
         ## 강사 화면
         if user_type == USER_TYPE_INSTRUCTOR:
-          show_instructor_menu(user)
+          show_instructor_menu(user, current_datetime)
 
         ## 회원 화면
         elif user_type == USER_TYPE_MEMBER:
-           current_ymdhm = int(context.current_datetime.datetime_obj.strftime("%y%m%d%H%M"))
-           system = MemberSystem(user.id, current_ymdhm)
+           system = MemberSystem(user.id, current_datetime)
            system.show_menu()
            
 if __name__ == '__main__':

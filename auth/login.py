@@ -36,6 +36,6 @@ def login(user_type: str):
         if user.pw == pw:
             break
         print("[오류] 비밀번호가 맞지 않습니다.")
-   
+    print("로그인이 완료되었습니다.")
     return user
         
