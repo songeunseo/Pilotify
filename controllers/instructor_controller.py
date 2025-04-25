@@ -88,6 +88,10 @@ def view_classes(instructor: Instructor):
     classes = read_csv(CLASS_PATH)
     my_classes = [c for c in classes if c['강사 id'] == instructor.id]
     
+    if not my_classes:
+        print("[오류] 등록된 수업이 없습니다.\n")
+        return
+    
     # 날짜순으로 정렬
     my_classes.sort(key=lambda x: x['날짜'])
     
