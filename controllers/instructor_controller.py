@@ -59,7 +59,7 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     print("───────────────────────────────────────")
     
     time_input = input("등록하고 싶은 타임을 입력해주세요 >> ").strip()
-    if not time_input.isdigit() or not (0 <= int(time_input) <= 14):
+    if not re.match(r'^[01][0-9]$', time_input):
         print("[오류] 타임 형식에 맞지 않습니다.\n")
         return
     if any(c for c in my_classes if c['날짜'] == date_input and c['타임'] == time_input):
