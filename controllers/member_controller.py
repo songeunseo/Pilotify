@@ -48,28 +48,7 @@ class MemberSystem:
                 ))
         return class_list
 
-
-    def apply_class(self):
-        self.display_classes()
-        session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ").strip()
-
-        if not session_id.isdigit() or len(session_id) != 4:
-            print("[오류] 수업 ID 형식에 맞지 않습니다.")
-            return
-
-        target = next((c for c in self.class_list if c.session_id == session_id), None)
-        if not target:
-            print("[오류] 해당하는 수업 ID가 존재하지 않습니다.")
-        elif target.is_past(self.current_ymdhm):
-            print("[오류] 이미 지난 수업입니다.")
-        elif session_id in self.enrolled_classes:
-            print("[오류] 이미 신청된 수업입니다.")
-        elif target.is_full():
-            print("[오류] 수강이 마감된 수업입니다.")
-        else:
-            target.applicants += 1
-            self.enrolled_classes.add(session_id)
-            print("신청 완료되었습니다.")
+ 
     def show_menu(self):
         while True:
             print("───────────────────────────────────────────────")
@@ -98,27 +77,25 @@ class MemberSystem:
         print("───────────────────────────────────────────────")
 
     def apply_class(self):
-        self.display_classes()
-        session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ").strip()
-        target = next((c for c in self.class_list if c.session_id == session_id), None)
-        if not target:
-            print("[오류] 해당하는 수업 ID가 존재하지 않습니다.")
-            return
-        if not session_id.isdigit() or len(session_id) != 4:
-            print("[오류] 수업 ID 형식에 맞지 않습니다.")
-            return
-        if target.is_past(self.current_ymdhm):
-            print("[오류] 이미 지난 수업입니다.")
-            return
-        if self.username in target.enrolled_user_ids:
-            print("[오류] 이미 신청된 수업입니다.")
-            return
-        if target.is_full():
-            print("[오류] 수강이 마감된 수업입니다.")
-            return
-        target.enrolled_user_ids.append(self.username)
-        self.save_classes_to_csv("data/class.csv")
-        print("신청 완료되었습니다.")
+        while True: 
+            self.display_classes()
+            session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ").strip()
+            target = next((c for c in self.class_list if c.session_id == session_id), None)
+            if not target:
+                print("[오류] 해당하는 수업 ID가 존재하지 않습니다.")
+            elif not session_id.isdigit() or len(session_id) != 4:
+                print("[오류] 수업 ID 형식에 맞지 않습니다.")
+            elif target.is_past(self.current_ymdhm):
+                print("[오류] 이미 지난 수업입니다.")
+            elif self.username in target.enrolled_user_ids:
+                print("[오류] 이미 신청된 수업입니다.")
+            elif target.is_full():
+                print("[오류] 수강이 마감된 수업입니다.")
+            else: 
+                target.enrolled_user_ids.append(self.username)
+                self.save_classes_to_csv("data/class.csv")
+                print("신청 완료되었습니다.")
+                break
 
     def cancel_class(self):
         applied_classes = [c for c in self.class_list if self.username in c.enrolled_user_ids]
@@ -126,23 +103,24 @@ class MemberSystem:
             print("[오류] 신청한 수업이 없습니다.")
             return
 
-        print("───────────────────────────────────────────────")
-        print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
-        for c in applied_classes:
-            print(c.__str__())
-        print("───────────────────────────────────────────────")
+        while True: 
+            print("───────────────────────────────────────────────")
+            print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
+            for c in applied_classes:
+                print(c.__str__())
+            print("───────────────────────────────────────────────")
 
-        session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
-        target = next((c for c in applied_classes if c.session_id == session_id), None)
+            session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
+            target = next((c for c in applied_classes if c.session_id == session_id), None)
 
-        if not session_id.isdigit() or len(session_id) != 4:
-            print("[오류] 수업 ID 형식에 맞지 않습니다.")
-            return
-        if not target:
-            print("[오류] 신청한 수업이 아닙니다.")
-            return
-        target.enrolled_user_ids.remove(self.username)
-        self.save_classes_to_csv("data/class.csv") 
+            if not session_id.isdigit() or len(session_id) != 4:
+                print("[오류] 수업 ID 형식에 맞지 않습니다.")
+            elif not target:
+                print("[오류] 신청한 수업이 아닙니다.")
+            else:
+                target.enrolled_user_ids.remove(self.username)
+                self.save_classes_to_csv("data/class.csv") 
+                break
         
         print("취소되었습니다.")
 

@@ -40,16 +40,16 @@ def register_class(instructor: Instructor):
         date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ").strip()
         if not re.match(r'^\d{6}$', date_input):
             print("[오류] 날짜 형식에 맞지 않습니다.\n")
-            continue
+            return
 
         try:
             date_obj = datetime.strptime(date_input, "%y%m%d")
             if date_obj.date() <= context.get_current_datetime().get_date():
                 print("[오류] 이미 지난 날짜입니다.\n")
-                continue
+                return
         except ValueError:
             print("[오류] 날짜 형식에 맞지 않습니다.\n")
-            continue
+            return
         break
 
     time_table = [f"타임 {i:02d}: {8+i:02d}:00~{8+i:02d}:50" for i in range(15)]
@@ -59,22 +59,18 @@ def register_class(instructor: Instructor):
         print(t)
     print("───────────────────────────────────────")
     
-    while True:
-        time_input = input("등록하고 싶은 타임을 입력해주세요 >> ").strip()
-        if not time_input.isdigit() or not (0 <= int(time_input) <= 14):
-            print("[오류] 타임 형식에 맞지 않습니다.\n")
-            continue
-        if any(c for c in my_classes if c['날짜'] == date_input and c['타임'] == time_input):
-            print("[오류] 이 타임에 이미 수업이 등록되어 있습니다.\n")
-            continue
-        break
+    time_input = input("등록하고 싶은 타임을 입력해주세요 >> ").strip()
+    if not time_input.isdigit() or not (0 <= int(time_input) <= 14):
+        print("[오류] 타임 형식에 맞지 않습니다.\n")
+        return
+    if any(c for c in my_classes if c['날짜'] == date_input and c['타임'] == time_input):
+        print("[오류] 이 타임에 이미 수업이 등록되어 있습니다.\n")
+        return
 
-    while True:
-        capacity = input("수업 정원을 입력해주세요 >> ").strip()
-        if not capacity.isdigit() or not (1 <= int(capacity) <= 6):
-            print("[오류] 1~6 숫자만 가능합니다.\n")
-            continue
-        break
+    capacity = input("수업 정원을 입력해주세요 >> ").strip()
+    if not capacity.isdigit() or not (1 <= int(capacity) <= 6):
+        print("[오류] 1~6 숫자만 가능합니다.\n")
+        return
 
     new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0001"
     new_class = {
