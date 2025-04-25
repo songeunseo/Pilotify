@@ -4,9 +4,8 @@ from file_handler import read_csv, write_csv
 from utils import *
 from constants import *
 from models import Instructor
-import context
 
-def show_instructor_menu(instructor: Instructor):
+def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
     while True:
         print("───────────────────────────────────────")
         print("1. 수업 등록")
@@ -20,13 +19,13 @@ def show_instructor_menu(instructor: Instructor):
             continue
 
         if choice == '1':
-            register_class(instructor)
+            register_class(instructor, current_datetime)
         elif choice == '2':
             view_classes(instructor)
         elif choice == '3':
             break
 
-def register_class(instructor: Instructor):
+def register_class(instructor: Instructor, current_datetime: datetime):
     classes = read_csv(CLASS_PATH)
     my_classes = [c for c in classes if c['강사 id'] == instructor.id]
     if len(my_classes) >= MAX_CLASSES_PER_INSTRUCTOR:
@@ -44,7 +43,7 @@ def register_class(instructor: Instructor):
 
         try:
             date_obj = datetime.strptime(date_input, "%y%m%d")
-            if date_obj.date() <= context.get_current_datetime().get_date():
+            if date_obj.date() <= current_datetime.date():
                 print("[오류] 이미 지난 날짜입니다.\n")
                 return
         except ValueError:
