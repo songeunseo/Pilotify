@@ -2,6 +2,7 @@ import csv
 import os,sys
 from file_handler import load_member_data, load_instructor_data
 from datetime import datetime
+import re
 
 class ClassSession:
     def __init__(self, session_id, date, time, teacher_id, enrolled_user_ids, capacity,instructor_names):
@@ -82,11 +83,13 @@ class MemberSystem:
         while True: 
             self.display_classes()
             session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ").strip()
+            if not re.match(r'^\d{4}$', session_id):
+                print("[오류] 수업 ID 형식에 맞지 않습니다.")
+                continue
+                
             target = next((c for c in self.class_list if c.session_id == session_id), None)
             if not target:
                 print("[오류] 해당하는 수업 ID가 존재하지 않습니다.")
-            elif not session_id.isdigit() or len(session_id) != 4:
-                print("[오류] 수업 ID 형식에 맞지 않습니다.")
             elif target.is_past(self.current_datetime):
                 print("[오류] 이미 지난 수업입니다.")
             elif self.username in target.enrolled_user_ids:
@@ -115,7 +118,7 @@ class MemberSystem:
             session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
             target = next((c for c in applied_classes if c.session_id == session_id), None)
 
-            if not session_id.isdigit() or len(session_id) != 4:
+            if not re.match(r'^\d{4}$', session_id):
                 print("[오류] 수업 ID 형식에 맞지 않습니다.")
             elif not target:
                 print("[오류] 신청한 수업이 아닙니다.")
