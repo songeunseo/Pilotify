@@ -12,9 +12,10 @@ def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
         print("2. 수업 조회")
         print("3. 로그아웃")
         print("───────────────────────────────────────")
-        choice = input("숫자를 입력해주세요 >> ").strip()
+        choice = input("숫자를 입력해주세요 >> ")
 
-        if not choice.isdigit() or choice not in ['1', '2', '3']:
+        # 공백 검사 추가 + 기존 오류 메시지로 통일
+        if (choice != choice.strip()) or (not choice.isdigit()) or (choice not in ['1', '2', '3']):
             print("[오류] 1~3 숫자만 가능합니다\n")
             continue
 
@@ -35,8 +36,13 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     print("\n───────────────────────────────────────")
     print("[ 수업 등록 ]")
     print("───────────────────────────────────────")
-    date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ").strip()
+    date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ")
     
+    # 공백 검사 + 날짜 형식 검사
+    if (date_input != date_input.strip()) or (not re.match(r'^\d{6}$', date_input)):
+        print("[오류] 날짜 형식에 맞지 않습니다.\n")
+        return
+
     try:
         date_obj = datetime.strptime(date_input, "%y%m%d")
         if date_obj.date() <= current_datetime.date():
@@ -53,24 +59,30 @@ def register_class(instructor: Instructor, current_datetime: datetime):
         print(t)
     print("───────────────────────────────────────")
     
-    time_input = input("등록하고 싶은 타임을 입력해주세요 >> ").strip()
-    if not re.match(r'^[01][0-9]$', time_input):
+    time_input = input("등록하고 싶은 타임을 입력해주세요 >> ")
+
+    # 공백 검사 + 타임 형식 검사
+    if (time_input != time_input.strip()) or (not re.match(r'^[01][0-9]$', time_input)):
         print("[오류] 타임 형식에 맞지 않습니다.\n")
         return
+
     if any(c for c in my_classes if c['날짜'] == date_input and c['타임'] == time_input):
         print("[오류] 이 타임에 이미 수업이 등록되어 있습니다.\n")
         return
 
-    capacity = input("수업 정원을 입력해주세요 >> ").strip()
-    if not capacity.isdigit() or not (1 <= int(capacity) <= 6):
+    capacity = input("수업 정원을 입력해주세요 >> ")
+    
+    # 공백 검사 + 숫자/범위 검사
+    if (capacity != capacity.strip()) or (not capacity.isdigit()) or not (1 <= int(capacity) <= 6):
         print("[오류] 1~6 숫자만 가능합니다.\n")
         return
+
     # 총 정원 초과 체크
     current_total_capacity = sum(int(c['정원']) for c in my_classes)
     if current_total_capacity + int(capacity) > 20:
         print(f"[오류] 해당 타임 등록된 정원 현황 {current_total_capacity}/20\n")
         return
-
+    
     new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0001"
     new_class = {
         "아이디": new_id,
@@ -102,4 +114,4 @@ def view_classes(instructor: Instructor):
         time = f"{int(c['타임'])+8:02d}:00-{int(c['타임'])+8:02d}:50"  # 타임을 실제 시간으로 변환
         print(f"   {c['아이디']:>4}     {c['날짜']}     {instructor.name}     {time}       {c['정원']:>2}             {len(c['수강 회원 id 리스트'].split(',')) if c['수강 회원 id 리스트'] else 0}")
     print("───────────────────────────────────────")
-    input("아무 키나 누르면 메뉴 화면으로 돌아갑니다 >> ")
+    input("엔터키를 누르면 메뉴 화면으로 돌아갑니다 >> ")
