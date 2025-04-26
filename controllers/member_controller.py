@@ -57,7 +57,12 @@ class MemberSystem:
             print("───────────────────────────────────────────────")
             print("1. 수업 신청\n2. 수업 취소\n3. 신청 수업 조회\n4. 로그아웃")
             print("───────────────────────────────────────────────")
-            choice = input("숫자를 입력해주세요 >> ").strip()
+            choice = input("숫자를 입력해주세요 >> ")
+
+            # 공백 검사 + 숫자 검사 + 범위 검사
+            if (choice != choice.strip()) or (not choice.isdigit()) or (choice not in ['1', '2', '3', '4']):
+                print("[오류] 1~4 숫자만 가능합니다")
+                continue
 
             if choice == "1":
                 self.apply_class()
@@ -68,8 +73,6 @@ class MemberSystem:
             elif choice == "4":
                 print("로그아웃되었습니다.")
                 break
-            else:
-                print("[오류] 1~4 숫자만 가능합니다")
 
     def display_classes(self):
         print("───────────────────────────────────────────────")
@@ -82,8 +85,10 @@ class MemberSystem:
     def apply_class(self):
         while True: 
             self.display_classes()
-            session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ").strip()
-            if not re.match(r'^\d{4}$', session_id):
+            session_id = input("신청하고 싶은 수업 ID를 입력해주세요 >> ")
+
+            # 공백 검사 + 4자리 숫자 검사
+            if (session_id != session_id.strip()) or (not re.match(r'^\d{4}$', session_id)):
                 print("[오류] 수업 ID 형식에 맞지 않습니다.")
                 continue
                 
@@ -114,8 +119,10 @@ class MemberSystem:
             print(c.__str__())
         print("───────────────────────────────────────────────")
 
-        session_id = input("취소할 수업 ID를 입력해주세요 >> ").strip()
-        if not re.match(r'^\d{4}$', session_id):
+        session_id = input("취소할 수업 ID를 입력해주세요 >> ")
+
+        # 공백 검사 + 4자리 숫자 검사
+        if (session_id != session_id.strip()) or (not re.match(r'^\d{4}$', session_id)):
             print("[오류] 수업 ID 형식에 맞지 않습니다.")
             return
             

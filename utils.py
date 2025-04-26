@@ -42,7 +42,7 @@ def validate_login_id(id: str, user_list: list):
 
 def validate_signup_id(user_id: str) -> bool:
     """회원가입 아이디 유효성 검사: 영문자와 숫자만 허용"""
-    return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9]{4,15}$', user_id))
+    return bool(re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*]{4,15}$', user_id))
 
 def validate_signup_name(name: str) -> bool:
     """회원가입 이름 유효성 검사"""
