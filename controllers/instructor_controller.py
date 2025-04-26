@@ -65,6 +65,11 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     if not capacity.isdigit() or not (1 <= int(capacity) <= 6):
         print("[오류] 1~6 숫자만 가능합니다.\n")
         return
+    # 총 정원 초과 체크
+    current_total_capacity = sum(int(c['정원']) for c in my_classes)
+    if current_total_capacity + int(capacity) > 20:
+        print(f"[오류] 해당 타임 등록된 정원 현황 {current_total_capacity}/20\n")
+        return
 
     new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0001"
     new_class = {
