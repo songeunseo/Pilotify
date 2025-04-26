@@ -6,39 +6,63 @@ from datetime import datetime
 from file_handler import read_csv, write_csv
 
 def validate_datetime_input(user_input: str) -> int:
-    # 콤마가 정확히 한 개여야 함, 공백이 없어야 함
     if (user_input.count(',') != 1) or (' ' in user_input):
         return BASIC_ERROR
 
     date_str, time_str = user_input.split(',')
 
-    # 날짜는 6자리, 시간은 5자리 + ':' 포함
     if (len(date_str) != 6) or (len(time_str) != 5 or ':' not in time_str):
         return BASIC_ERROR
 
-    # 실제 존재하는 날짜/시간인지 확인
     try:
-        input_datetime = datetime.strptime(user_input, "%y%m%d,%H:%M")
-    except ValueError:
-        return BASIC_ERROR
+        # 입력된 날짜 해석
+        input_year = int(date_str[:2])
+        input_month = int(date_str[2:4])
+        input_day = int(date_str[4:6])
 
-    # datetime.csv 파일에서 날짜 읽기
-    rows = read_csv(DATETIME_PATH)
-    if rows and rows[0]:  # 파일이 비어있지 않은 경우
-        try:
+        if 0 <= input_year <= 68:
+            input_full_year = 2000 + input_year
+        else:
+            input_full_year = 2000 + input_year
+
+        input_hour = int(time_str[:2])
+        input_minute = int(time_str[3:5])
+
+        input_datetime = datetime(input_full_year, input_month, input_day, input_hour, input_minute)
+
+        rows = read_csv(DATETIME_PATH)
+        if rows and rows[0]:
             last_date = rows[0]["datetime"] if isinstance(rows[0], dict) else rows[0][0]
-            last_datetime = datetime.strptime(last_date, "%y%m%d,%H:%M")
+            last_date_str, last_time_str = last_date.split(',')
+
+            # 저장된 날짜 해석
+            last_year = int(last_date_str[:2])
+            last_month = int(last_date_str[2:4])
+            last_day = int(last_date_str[4:6])
+
+            if 0 <= last_year <= 68:
+                last_full_year = 2000 + last_year
+            else:
+                last_full_year = 2000 + last_year
+
+            last_hour = int(last_time_str[:2])
+            last_minute = int(last_time_str[3:5])
+
+            last_datetime = datetime(last_full_year, last_month, last_day, last_hour, last_minute)
+
+            # 비교
             if input_datetime > last_datetime:
-                write_csv(DATETIME_PATH, [{"datetime": user_input}])  # 새로운 날짜로 파일 업데이트
+                write_csv(DATETIME_PATH, [{"datetime": user_input}])
                 return SUCCESS
             else:
                 return BASIC_ERROR
-        except (ValueError, IndexError, KeyError):
-            return BASIC_ERROR
-    else:
-        # 파일이 비어있는 경우 새로운 날짜 작성
-        write_csv(DATETIME_PATH, [{"datetime": user_input}])
-        return SUCCESS
+        else:
+            # 파일 비어있으면 그냥 기록
+            write_csv(DATETIME_PATH, [{"datetime": user_input}])
+            return SUCCESS
+
+    except (ValueError, IndexError, KeyError):
+        return BASIC_ERROR
 
 def validate_menu_choice(user_input: str, valid_choices: list[str]) -> bool:
     # 입력이 숫자이고, 선택지 안에 있는지 검사
