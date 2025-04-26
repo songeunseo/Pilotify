@@ -45,7 +45,7 @@ def register_class(instructor: Instructor, current_datetime: datetime):
 
     try:
         date_obj = datetime.strptime(date_input, "%y%m%d")
-        if date_obj.date() <= current_datetime.date():
+        if date_obj.date() < current_datetime.date():
             print("[오류] 이미 지난 날짜입니다.\n")
             return
     except ValueError:
@@ -62,25 +62,40 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     time_input = input("등록하고 싶은 타임을 입력해주세요 >> ")
 
     # 공백 검사 + 타임 형식 검사
-    if (time_input != time_input.strip()) or (not re.match(r'^[01][0-9]$', time_input)):
+    if (time_input != time_input.strip()) or (not re.match(r'^[01][0-4]$', time_input)):
         print("[오류] 타임 형식에 맞지 않습니다.\n")
         return
+    
+    # 1단계: 오늘 날짜인 경우 시간 비교
+    if date_input == current_datetime.strftime("%y%m%d"):
+    # 타임을 실제 시간으로 변환
+        time_hour = int(time_input) + 8  # 타임 00 = 8시, 타임 01 = 9시, ...
+
+    # 현재 시간 꺼내기
+        now_hour = current_datetime.hour
+        now_minute = current_datetime.minute
+
+    # 만약 현재 시간이 타임 시작 시각을 넘었으면 오류
+        if now_hour > time_hour or (now_hour == time_hour and now_minute > 0):
+            print("[오류] 이미 지난 시간입니다.\n")
+            return
 
     if any(c for c in my_classes if c['날짜'] == date_input and c['타임'] == time_input):
         print("[오류] 이 타임에 이미 수업이 등록되어 있습니다.\n")
         return
 
     capacity = input("수업 정원을 입력해주세요 >> ")
-    
-    # 공백 검사 + 숫자/범위 검사
-    if (capacity != capacity.strip()) or (not capacity.isdigit()) or not (1 <= int(capacity) <= 6):
+
+# 공백 검사 + 숫자 검사 + 1~6 범위 + 앞자리 0 금지
+    if (capacity != capacity.strip()) or (not capacity.isdigit()) or (capacity.startswith('0')) or not (1 <= int(capacity) <= 6):
         print("[오류] 1~6 숫자만 가능합니다.\n")
         return
 
-    # 총 정원 초과 체크
-    current_total_capacity = sum(int(c['정원']) for c in my_classes)
+# 같은 날짜, 같은 타임에 있는 모든 수업의 정원 합을 계산
+    current_total_capacity = sum(int(c['정원']) for c in classes if c['날짜'] == date_input and c['타임'] == time_input)
+
     if current_total_capacity + int(capacity) > 20:
-        print(f"[오류] 해당 타임 등록된 정원 현황 {current_total_capacity}/20\n")
+        print(f"[오류] 해당 날짜와 타임에 등록된 총 정원이 {current_total_capacity}/20 입니다. 추가 등록이 불가합니다.\n")
         return
     
     new_id = f"{int(classes[-1]['아이디']) + 1:04d}" if classes else "0001"
