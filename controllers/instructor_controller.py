@@ -42,15 +42,38 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     if (date_input != date_input.strip()) or (not re.match(r'^\d{6}$', date_input)):
         print("[오류] 날짜 형식에 맞지 않습니다.\n")
         return
-
+    
     try:
-        date_obj = datetime.strptime(date_input, "%y%m%d")
+        year = int(date_input[:2])
+        month_day = date_input[2:]
+
+        if not (0 <= year <= 99) or len(month_day) != 4:
+            raise ValueError
+
+    # 년도 직접 해석하기
+        if 0 <= year <= 68:
+            full_year = 2000 + year
+        else:
+            full_year = 2100 + (year - 100) if year < 69 else 2000 + year  # 69~99는 2069~2099로
+
+    # 날짜 객체 만들기
+        date_obj = datetime.strptime(f"{full_year}{month_day}", "%Y%m%d")
+
         if date_obj.date() < current_datetime.date():
             print("[오류] 이미 지난 날짜입니다.\n")
             return
+
     except ValueError:
         print("[오류] 날짜 형식에 맞지 않습니다.\n")
         return
+    # try:
+    #     date_obj = datetime.strptime(date_input, "%y%m%d")
+    #     if date_obj.date() < current_datetime.date():
+    #         print("[오류] 이미 지난 날짜입니다.\n")
+    #         return
+    # except ValueError:
+    #     print("[오류] 날짜 형식에 맞지 않습니다.\n")
+    #     return
 
     time_table = [f"타임 {i:02d}: {8+i:02d}:00~{8+i:02d}:50" for i in range(15)]
     print("\n───────────────────────────────────────")
