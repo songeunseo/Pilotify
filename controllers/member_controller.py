@@ -135,6 +135,7 @@ class MemberSystem:
         self.save_classes_to_csv("data/class.csv") 
         print("취소되었습니다.")
         return
+    # 확인 
 
     def view_enrollments(self):
         print("───────────────────────────────────────────────")

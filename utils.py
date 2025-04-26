@@ -37,6 +37,7 @@ def validate_login_id(id: str, user_list: list):
     for user in user_list:
         if user.id == id:
             return SUCCESS, user
+        #확인
     
     return BASIC_ERROR, None
 
