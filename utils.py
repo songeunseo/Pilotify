@@ -1,10 +1,9 @@
 import csv
 import re
 import os
-from constants import SUCCESS, BASIC_ERROR, GRAMMAR_ERROR, NO_DUPLICATION
-from constants import USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER, MEMBER_PATH, INSTRUCTOR_PATH
+from constants import SUCCESS, BASIC_ERROR, MEMBER_PATH, INSTRUCTOR_PATH, DATETIME_PATH
 from datetime import datetime
-from models import Member, Instructor
+from file_handler import read_csv, write_csv
 
 def validate_datetime_input(user_input: str) -> int:
     # 콤마가 정확히 한 개여야 함, 공백이 없어야 함
@@ -19,11 +18,27 @@ def validate_datetime_input(user_input: str) -> int:
 
     # 실제 존재하는 날짜/시간인지 확인
     try:
-        datetime.strptime(date_str + ' ' + time_str, "%y%m%d %H:%M")
+        input_datetime = datetime.strptime(user_input, "%y%m%d,%H:%M")
     except ValueError:
         return BASIC_ERROR
 
-    return SUCCESS
+    # datetime.csv 파일에서 날짜 읽기
+    rows = read_csv(DATETIME_PATH)
+    if rows and rows[0]:  # 파일이 비어있지 않은 경우
+        try:
+            last_date = rows[0]["datetime"] if isinstance(rows[0], dict) else rows[0][0]
+            last_datetime = datetime.strptime(last_date, "%y%m%d,%H:%M")
+            if input_datetime > last_datetime:
+                write_csv(DATETIME_PATH, [{"datetime": user_input}])  # 새로운 날짜로 파일 업데이트
+                return SUCCESS
+            else:
+                return BASIC_ERROR
+        except (ValueError, IndexError, KeyError):
+            return BASIC_ERROR
+    else:
+        # 파일이 비어있는 경우 새로운 날짜 작성
+        write_csv(DATETIME_PATH, [{"datetime": user_input}])
+        return SUCCESS
 
 def validate_menu_choice(user_input: str, valid_choices: list[str]) -> bool:
     # 입력이 숫자이고, 선택지 안에 있는지 검사
