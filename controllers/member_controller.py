@@ -140,7 +140,7 @@ class MemberSystem:
         if not found:
             print("신청한 수업이 없습니다.")
         print("───────────────────────────────────────────────")
-        input("아무 키나 누르면 메뉴 화면으로 돌아갑니다 >> ")
+        input("엔터키를 누르면 메뉴 화면으로 돌아갑니다 >> ")
 
     def save_classes_to_csv(self, path):
         with open(path, 'w', newline='', encoding='utf-8') as csvfile:

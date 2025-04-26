@@ -10,15 +10,24 @@ import views
 
 def verify_instructor_code():
     while True:
-        code = input("인증코드를 입력하세요 >>").strip()
-        if code == INSTRUCTOR_CODE:
-            break
-        views.print_error("올바른 인증 코드가 아닙니다.")
+        code = input("인증코드를 입력하세요 >>")
+
+        # 공백 검사 + 코드 일치 검사
+        if (code != code.strip()) or (code != INSTRUCTOR_CODE):
+            views.print_error("올바른 인증 코드가 아닙니다.")
+            continue
+        break
 
 def get_user_id(is_instructor: bool) -> str:
     while True:
         views.print_user_id_rules()
-        user_id = input("아이디를 입력하세요 >>").strip()
+        user_id = input("아이디를 입력하세요 >>")
+
+        # 공백 검사 추가
+        if user_id != user_id.strip():
+            views.print_error("아이디 규칙에 맞지 않습니다.")
+            continue
+
         if not validate_signup_id(user_id):
             views.print_error("아이디 규칙에 맞지 않습니다.")
             continue
@@ -30,7 +39,13 @@ def get_user_id(is_instructor: bool) -> str:
 def get_name() -> str:
     while True:
         views.print_name_rules()
-        name = input("이름을 입력하세요 >>").strip()
+        name = input("이름을 입력하세요 >>")
+
+        # 공백 검사 추가
+        if name != name.strip():
+            views.print_error("이름 규칙에 맞지 않습니다.")
+            continue
+
         if not validate_signup_name(name):
             views.print_error("이름 규칙에 맞지 않습니다.")
             continue
@@ -39,7 +54,13 @@ def get_name() -> str:
 def get_phone() -> str:
     while True:
         views.print_phone_rules()
-        phone = input("전화번호를 입력하세요 >>").strip()
+        phone = input("전화번호를 입력하세요 >>")
+
+        # 공백 검사 추가
+        if phone != phone.strip():
+            views.print_error("전화번호 규칙에 맞지 않습니다.")
+            continue
+
         if not validate_signup_phone(phone):
             views.print_error("전화번호 규칙에 맞지 않습니다.")
             continue
@@ -48,7 +69,13 @@ def get_phone() -> str:
 def get_password() -> str:
     while True:
         views.print_password_rules()
-        password = input("비밀번호를 입력하세요 >>").strip()
+        password = input("비밀번호를 입력하세요 >>")
+
+        # 공백 검사 추가
+        if password != password.strip():
+            views.print_error("비밀번호 규칙에 맞지 않습니다.")
+            continue
+
         if not validate_signup_password(password):
             views.print_error("비밀번호 규칙에 맞지 않습니다.")
             continue
