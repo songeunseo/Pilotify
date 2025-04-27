@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
 import views
 import utils
 from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
