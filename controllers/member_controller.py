@@ -1,6 +1,7 @@
 import csv
 import os,sys
 from file_handler import load_member_data, load_instructor_data
+from constants import RESERVATION_PATH
 from datetime import datetime
 import re
 
@@ -35,7 +36,7 @@ class MemberSystem:
     
     def load_classes_from_csv(self):
         class_list = []
-        with open("data/class.csv", newline='', encoding='utf-8') as csvfile:
+        with open(RESERVATION_PATH, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 raw_users = row['수강 회원 id 리스트'].strip().strip('"')
@@ -103,7 +104,7 @@ class MemberSystem:
                 print("[오류] 수강이 마감된 수업입니다.")
             else: 
                 target.enrolled_user_ids.append(self.username)
-                self.save_classes_to_csv("data/class.csv")
+                self.save_classes_to_csv(RESERVATION_PATH)
                 print("신청 완료되었습니다.")
                 break
 
@@ -132,7 +133,7 @@ class MemberSystem:
             return
 
         target.enrolled_user_ids.remove(self.username)
-        self.save_classes_to_csv("data/class.csv") 
+        self.save_classes_to_csv(RESERVATION_PATH) 
         print("취소되었습니다.")
         return
     # 확인 

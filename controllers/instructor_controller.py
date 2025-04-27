@@ -27,7 +27,7 @@ def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
             break
 
 def register_class(instructor: Instructor, current_datetime: datetime):
-    classes = read_csv(CLASS_PATH)
+    classes = read_csv(RESERVATION_PATH)
     my_classes = [c for c in classes if c['강사 id'] == instructor.id]
     if classes and int(classes[-1]['아이디']) >= 9999:
         print("[오류] 등록 가능한 수업 개수가 4자리를 초과하였습니다.\n")
@@ -131,11 +131,11 @@ def register_class(instructor: Instructor, current_datetime: datetime):
         "수강 회원 id 리스트": ""
     }
     classes.append(new_class)
-    write_csv(CLASS_PATH, classes)
+    write_csv(RESERVATION_PATH, classes)
     print("수업 등록 완료되었습니다.\n")
 
 def view_classes(instructor: Instructor):
-    classes = read_csv(CLASS_PATH)
+    classes = read_csv(RESERVATION_PATH)
     my_classes = [c for c in classes if c['강사 id'] == instructor.id]
     
     if not my_classes:
