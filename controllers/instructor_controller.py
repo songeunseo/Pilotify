@@ -109,12 +109,12 @@ def register_class(instructor: Instructor, current_datetime: datetime):
 
     capacity = input("수업 정원을 입력해주세요 >> ")
 
-# 공백 검사 + 숫자 검사 + 1~6 범위 + 앞자리 0 금지
-    if (capacity != capacity.strip()) or (not capacity.isdigit()) or (capacity.startswith('0')) or not (1 <= int(capacity) <= 6):
+    # 공백 검사 + 숫자 검사 + 1~6 범위 + 앞자리 0 금지
+    if (capacity != capacity.strip()) or (not capacity.isdecimal()) or (capacity.startswith('0')) or not (1 <= int(capacity) <= 6):
         print("[오류] 1~6 숫자만 가능합니다.\n")
         return
 
-# 같은 날짜, 같은 타임에 있는 모든 수업의 정원 합을 계산
+    # 같은 날짜, 같은 타임에 있는 모든 수업의 정원 합을 계산
     current_total_capacity = sum(int(c['정원']) for c in classes if c['날짜'] == date_input and c['타임'] == time_input)
 
     if current_total_capacity + int(capacity) > 20:
