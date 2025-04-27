@@ -85,7 +85,7 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     time_input = input("등록하고 싶은 타임을 입력해주세요 >> ")
 
     # 공백 검사 + 타임 형식 검사
-    if (time_input != time_input.strip()) or (not re.match(r'^[01][0-4]$', time_input)):
+    if (time_input != time_input.strip()) or (not re.match(r'^(0[0-9]|1[0-4])$', time_input)):
         print("[오류] 타임 형식에 맞지 않습니다.\n")
         return
     
