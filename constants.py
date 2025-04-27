@@ -17,6 +17,7 @@ USER_TYPE_INSTRUCTOR = 'n'
 MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
 CLASS_PATH = 'data/class.csv'
+DATETIME_PATH = 'data/datetime.csv'
 
 ## Instructor auth code
 INSTRUCTOR_CODE = '0000'

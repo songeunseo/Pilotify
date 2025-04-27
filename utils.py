@@ -50,7 +50,6 @@ def validate_datetime_input(user_input: str) -> int:
 
             last_datetime = datetime(last_full_year, last_month, last_day, last_hour, last_minute)
 
-            # 비교
             if input_datetime >= last_datetime:
                 write_csv(DATETIME_PATH, [{"datetime": user_input}])
                 return SUCCESS
