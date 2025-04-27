@@ -16,7 +16,7 @@ USER_TYPE_INSTRUCTOR = 'n'
 ##file_path
 MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
-RESERVATION_PATH = 'data/reservation.csv'
+RESERVATION_PATH = 'data/reservations.csv'
 DATETIME_PATH = 'data/datetime.csv'
 
 ## Instructor auth code

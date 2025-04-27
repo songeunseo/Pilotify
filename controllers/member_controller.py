@@ -1,8 +1,8 @@
 import csv
 import os,sys
 from file_handler import load_member_data, load_instructor_data
-from constants import RESERVATION_PATH
 from datetime import datetime
+from constants import RESERVATION_PATH
 import re
 
 class ClassSession:
