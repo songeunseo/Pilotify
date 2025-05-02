@@ -6,14 +6,12 @@ from datetime import datetime
 from file_handler import read_csv, write_csv
 
 def validate_datetime_input(user_input: str) -> int:
-    if (user_input.count(',') != 1) or (' ' in user_input):
+    # 정규식으로 날짜,시간 형식 검사 (YYMMDD,HH:MM 형식)
+    if not re.fullmatch(r'\d{6},\d{2}:\d{2}', user_input):
         return BASIC_ERROR
 
     date_str, time_str = user_input.split(',')
-
-    if (len(date_str) != 6) or (len(time_str) != 5 or ':' not in time_str):
-        return BASIC_ERROR
-
+    
     try:
         # 입력된 날짜 해석
         input_year = int(date_str[:2])

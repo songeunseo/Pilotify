@@ -4,6 +4,7 @@ from file_handler import read_csv, write_csv
 from utils import *
 from constants import *
 from models import Instructor
+import re
 
 def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
     while True:
@@ -15,7 +16,7 @@ def show_instructor_menu(instructor: Instructor, current_datetime: datetime):
         choice = input("숫자를 입력해주세요 >> ")
 
         # 공백 검사 추가 + 기존 오류 메시지로 통일
-        if (choice != choice.strip()) or (not choice.isdigit()) or (choice not in ['1', '2', '3']):
+        if not re.fullmatch(r'[1-3]', choice):
             print("[오류] 1~3 숫자만 가능합니다\n")
             continue
 
@@ -39,7 +40,7 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     date_input = input("등록하고 싶은 날짜를 입력해주세요(YYMMDD) >> ")
     
     # 공백 검사 + 날짜 형식 검사
-    if (date_input != date_input.strip()) or (not re.match(r'^\d{6}$', date_input)):
+    if not re.fullmatch(r'^\d{6}$', date_input):
         print("[오류] 날짜 형식에 맞지 않습니다.\n")
         return
     
@@ -85,7 +86,7 @@ def register_class(instructor: Instructor, current_datetime: datetime):
     time_input = input("등록하고 싶은 타임을 입력해주세요 >> ")
 
     # 공백 검사 + 타임 형식 검사
-    if (time_input != time_input.strip()) or (not re.match(r'^(0[0-9]|1[0-4])$', time_input)):
+    if not re.fullmatch(r'^(0[0-9]|1[0-4])$', time_input):
         print("[오류] 타임 형식에 맞지 않습니다.\n")
         return
     

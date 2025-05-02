@@ -5,6 +5,8 @@ from auth.signup import signup
 from auth.login import login
 from datetime import datetime
 from controllers.member_controller import MemberSystem
+from controllers.instructor_controller import show_instructor_menu
+import re
 
 def main():
     ## 제목 출력
@@ -25,9 +27,6 @@ def main():
         ## 날짜와 시간 저장
         current_datetime = datetime.strptime(datetime_str, "%y%m%d,%H:%M")
         break
-
-    # current_datetime이 설정된 후에 instructor_controller를 import
-    from controllers.instructor_controller import show_instructor_menu
             
     while True: 
         while True: 
@@ -35,12 +34,10 @@ def main():
           views.print_main_menu()
           main_choice = views.prompt_menu_choice()
 
-          ## 입력 처리
-          main_choice_check = utils.validate_menu_choice(main_choice, ["1", "2", "3"])
-
-          if main_choice_check == SUCCESS:
-             break
-          print("[오류] 1~3 숫자만 가능합니다.")
+          if not re.fullmatch(r'[1-3]', main_choice):
+            print("[오류] 1~3 숫자만 가능합니다.")
+            continue
+          break
 
         if main_choice == "1":
            user_type = USER_TYPE_MEMBER
@@ -54,13 +51,10 @@ def main():
           ## 회원가입 혹은 로그인을 선택
           views.print_register_login_menu()
           register_login_choice = views.prompt_menu_choice()
-
-          ## 입력 처리
-          register_login_choice_check = utils.validate_menu_choice(register_login_choice, ["1", "2", "3"])
-
-          if register_login_choice_check == SUCCESS:
-             break
-          print("[오류] 1~3 숫자만 가능합니다.")
+          if not re.fullmatch(r'[1-3]', register_login_choice):
+            print("[오류] 1~3 숫자만 가능합니다.")
+            continue
+          break
 
 
         ## 회원가입
