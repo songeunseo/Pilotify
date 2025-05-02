@@ -34,10 +34,9 @@ def main():
           views.print_main_menu()
           main_choice = views.prompt_menu_choice()
 
-          if not re.fullmatch(r'[1-3]', main_choice):
-            print("[오류] 1~3 숫자만 가능합니다.")
-            continue
-          break
+          if re.fullmatch(r'[1-3]', main_choice):
+            break
+          print("[오류] 1~3 숫자만 가능합니다.")
 
         if main_choice == "1":
            user_type = USER_TYPE_MEMBER
@@ -51,10 +50,9 @@ def main():
           ## 회원가입 혹은 로그인을 선택
           views.print_register_login_menu()
           register_login_choice = views.prompt_menu_choice()
-          if not re.fullmatch(r'[1-3]', register_login_choice):
-            print("[오류] 1~3 숫자만 가능합니다.")
-            continue
-          break
+          if re.fullmatch(r'[1-3]', register_login_choice):
+            break
+          print("[오류] 1~3 숫자만 가능합니다.")
 
 
         ## 회원가입
