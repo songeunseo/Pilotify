@@ -61,14 +61,8 @@ def validate_datetime_input(user_input: str) -> int:
     except (ValueError, IndexError, KeyError):
         return BASIC_ERROR
 
-def validate_menu_choice(user_input: str, valid_choices: list[str]) -> bool:
-    # 입력이 숫자이고, 선택지 안에 있는지 검사
-    if user_input.isdigit() and user_input in valid_choices:
-        return SUCCESS
-    return BASIC_ERROR
-
 def validate_login_id(id: str, user_list: list):
-    if not re.match(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', id):
+    if not re.fullmatch(r'^[a-zA-Z][a-zA-Z0-9!@#$%^&*()_+=\-]{4,15}$', id):
         return BASIC_ERROR, None
     for user in user_list:
         if user.id == id:
