@@ -21,8 +21,8 @@ def validate_datetime_input(user_input: str) -> int:
         input_datetime = datetime(input_year, input_month, input_day, input_hour, input_minute)
 
         rows = read_csv(DATETIME_PATH)
-        # 파일 비어있으면(헤더만 존재) 그냥 기록
-        if len(rows) == 1:
+        # 파일이 비어있거나 데이터가 없는 경우 체크
+        if not rows or not any(row and "datetime" in row for row in rows):
             write_csv(DATETIME_PATH, [{"datetime": user_input}])
             return SUCCESS
 
