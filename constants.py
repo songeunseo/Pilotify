@@ -18,6 +18,7 @@ MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
 RESERVATION_PATH = 'data/reservations.csv'
 DATETIME_PATH = 'data/datetime.csv'
+INST_CODE_PATH = 'data/instructor_code.csv'
 
 ## Instructor auth code
 INSTRUCTOR_CODE = '0000'
