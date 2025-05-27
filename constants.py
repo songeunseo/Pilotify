@@ -12,6 +12,8 @@ NO_DUPLICATION = -3
 USER_TYPE_MEMBER = 'm'  
 ## Instructor    
 USER_TYPE_INSTRUCTOR = 'n'
+## Admin
+USER_TYPE_ADMIN = 'a'
 
 ##file_path
 MEMBER_PATH = 'data/members.csv'
