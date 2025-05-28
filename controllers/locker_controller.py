@@ -28,7 +28,7 @@ class LockerSystem:
         """사물함 데이터를 저장합니다."""
         data = [{'id': l.id, 'user_id': l.user_id} for l in self.lockers]
         try:
-            write_csv(LOCKER_PATH, data, fieldnames=['id', 'user_id'])
+            write_csv(LOCKER_PATH, data)
         except Exception as e:
              print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
 
