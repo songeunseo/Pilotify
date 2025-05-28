@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+from datetime import datetime, date, time
 @dataclass
 class Locker:
     id: str  # 사물함 번호
@@ -5,9 +7,6 @@ class Locker:
     
     def is_empty(self) -> bool:
         return self.user_id == "" 
-
-from dataclasses import dataclass
-from datetime import datetime, date, time
 
 @dataclass
 class Member:
