@@ -13,9 +13,7 @@ class LockerSystem:
         """사물함 데이터를 로드합니다."""
         try:
             # 파일이 비어있거나 헤더만 있는 경우 빈 리스트 반환
-            with open(LOCKER_PATH, newline='', encoding='utf-8') as csvfile:
-                reader = csv.DictReader(csvfile)
-                data = list(reader)
+            data = read_csv(LOCKER_PATH)
                 if not data: # 데이터 행이 없는 경우
                     return []
                 return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
