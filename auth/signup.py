@@ -1,4 +1,4 @@
-from constants import MEMBER_PATH, INSTRUCTOR_PATH, INSTRUCTOR_CODE, USER_TYPE_INSTRUCTOR
+from constants import MEMBER_PATH, INSTRUCTOR_PATH, USER_TYPE_INSTRUCTOR, INST_CODE_PATH
 from models import Instructor, Member
 from file_handler import read_csv, write_csv
 import views
@@ -7,9 +7,12 @@ import re
 def get_instructor_code():
     while True:
         code = input("인증코드를 입력하세요 >>")
+        rows = read_csv(INST_CODE_PATH)
+        if not rows:
+            views.print_error("인증코드가 설정되지 않았습니다.")
+            continue
 
-        # 공백 검사 + 코드 일치 검사
-        if (code != code.strip()) or (code != INSTRUCTOR_CODE):
+        if (code != code.strip()) or (code != rows[0]["current_code"]):
             views.print_error("올바른 인증 코드가 아닙니다.")
             continue
         break
