@@ -2,6 +2,50 @@ import re
 from utils import read_csv, write_csv
 from constants import *
 from datetime import datetime
+from controllers.locker_controller import LockerSystem
+
+def show_admin_menu(current_datetime: datetime):
+    locker_system = LockerSystem()
+    while True:
+        print("───────────────────────────────────────")
+        print("[ 관리자 메뉴 ]")
+        print("───────────────────────────────────────")
+        print("1. 수업 취소 승인 (구현 예정)")
+        print("2. 사물함 강제 퇴거 (구현 예정)")
+        print("3. 사물함 개수 설정")
+        print("4. 강사 인증 코드 수정")
+        print("5. 로그아웃")
+        print("───────────────────────────────────────")
+        choice = input("숫자를 입력해주세요 >> ")
+
+        # 공백 검사 추가 + 기존 오류 메시지로 통일
+        if not re.fullmatch(r'[1-5]', choice):
+            print("[오류] 1~5 숫자만 가능합니다\n")
+            continue
+
+        if choice == '1':
+            print("[안내] 수업 취소 승인 기능은 구현 예정입니다.\n")
+            pass # TODO: 수업 취소 승인 기능 구현
+        elif choice == '2':
+            print("[안내] 사물함 강제 퇴거 기능은 구현 예정입니다.\n")
+            pass # TODO: 사물함 강제 퇴거 기능 구현
+        elif choice == '3':
+            set_locker_count(locker_system)
+        elif choice == '4':
+            set_instructor_code(current_datetime)
+        elif choice == '5':
+            break
+
+def set_locker_count(locker_system: LockerSystem):
+    """사물함 개수를 설정합니다."""
+    print("\n───────────────────────────────────────")
+    print("[ 사물함 개수 설정 ]")
+    print("───────────────────────────────────────")
+    print(f"현재 사물함 개수: {len(locker_system.lockers)}")
+    new_count = input("새로운 사물함 개수를 입력하세요 >> ")
+    
+    success, message = locker_system.set_locker_count(new_count)
+    print(f"[{'완료' if success else '오류'}] {message}\n")
 
 def set_instructor_code(current_datetime:datetime)->None:
     rows = read_csv(INST_CODE_PATH)
