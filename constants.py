@@ -22,5 +22,9 @@ RESERVATION_PATH = 'data/reservations.csv'
 DATETIME_PATH = 'data/datetime.csv'
 INST_CODE_PATH = 'data/instructor_code.csv'
 
+## Locker
+LOCKER_PATH = 'data/lockers.csv'
+MAX_LOCKERS = 25  # 최대 사물함 개수
+
 ## Instructor auth code
 INSTRUCTOR_CODE = '0000'

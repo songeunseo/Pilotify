@@ -6,6 +6,7 @@ from auth.login import login
 from datetime import datetime
 from controllers.member_controller import MemberSystem
 from controllers.instructor_controller import show_instructor_menu
+from controllers.admin_controller import show_admin_menu
 import re
 
 def main():
