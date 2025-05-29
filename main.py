@@ -1,6 +1,6 @@
 import views
 import utils
-from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER
+from constants import SUCCESS, USER_TYPE_INSTRUCTOR, USER_TYPE_MEMBER, USER_TYPE_ADMIN
 from auth.signup import signup
 from auth.login import login
 from datetime import datetime
@@ -8,6 +8,7 @@ from controllers.member_controller import MemberSystem
 from controllers.instructor_controller import show_instructor_menu
 from controllers.admin_controller import show_admin_menu
 import re
+from controllers.admin_controller import  show_admin_menu
 
 def main():
     ## 제목 출력
@@ -35,14 +36,16 @@ def main():
           views.print_main_menu()
           main_choice = views.prompt_menu_choice()
 
-          if re.fullmatch(r'[1-3]', main_choice):
+          if re.fullmatch(r'[1-4]', main_choice):
             break
-          print("[오류] 1~3 숫자만 가능합니다.")
+          print("[오류] 1~4 숫자만 가능합니다.")
 
         if main_choice == "1":
            user_type = USER_TYPE_MEMBER
         elif main_choice == "2":
            user_type = USER_TYPE_INSTRUCTOR
+        elif main_choice == "3":
+           user_type = USER_TYPE_ADMIN
         else:
           break
 
@@ -76,6 +79,10 @@ def main():
         elif user_type == USER_TYPE_MEMBER:
            system = MemberSystem(user.id, current_datetime)
            system.show_menu()
+
+        elif user_type == USER_TYPE_ADMIN and user == SUCCESS:
+            show_admin_menu(current_datetime)
+           
            
 if __name__ == '__main__':
     main()

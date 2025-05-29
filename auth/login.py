@@ -3,7 +3,7 @@ from constants import SUCCESS
 import utils
 import sys
 import os
-from constants import USER_TYPE_MEMBER, USER_TYPE_INSTRUCTOR
+from constants import USER_TYPE_MEMBER, USER_TYPE_INSTRUCTOR, USER_TYPE_ADMIN
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import views
@@ -22,6 +22,18 @@ def login(user_type: str):
             user_list = member_list
         elif user_type == USER_TYPE_INSTRUCTOR:
             user_list = instructor_list
+        elif user_type == USER_TYPE_ADMIN:
+            if id == "Admin":
+                views.print_login()
+                pw = views.prompt_pw()
+                if pw == "0000":
+                    return SUCCESS
+                else:
+                    print("[오류] 비밀번호가 맞지 않습니다.\n")
+                    return None
+            else: 
+                print("[오류] 틀린 아이디입니다.\n")
+                return None
             
         res, user = utils.validate_login_id(id, user_list)
 
