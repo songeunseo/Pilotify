@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import re
 from typing import List
 from models import Locker
@@ -14,9 +15,9 @@ class LockerSystem:
         try:
             # 파일이 비어있거나 헤더만 있는 경우 빈 리스트 반환
             data = read_csv(LOCKER_PATH)
-                if not data: # 데이터 행이 없는 경우
-                    return []
-                return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
+            if not data: # 데이터 행이 없는 경우
+                return []
+            return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
         except FileNotFoundError:
             # 파일이 없으면 빈 리스트 반환
             return []
@@ -26,12 +27,38 @@ class LockerSystem:
     
     def save_lockers(self):
         """사물함 데이터를 저장합니다."""
-        data = [{'id': l.id, 'user_id': l.user_id} for l in self.lockers]
+        data = [{'id': l.id, 'user_id': l.user_id, "expire_date": l.expire_date} for l in self.lockers]
         try:
             write_csv(LOCKER_PATH, data)
         except Exception as e:
              print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
 
+    def get_remaining_days(self, current_datetime:datetime, locker: Locker) -> int:
+        """남은 일수를 반환합니다."""
+        expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
+        remaining_days = current_datetime-expire_date
+
+        if(remaining_days<=0):
+            locker.user_id = ""
+        
+        self.save_lockers()
+        return remaining_days
+    
+    def print_locker_status(self, current_datetime: datetime) -> None:
+        print("───────────────────────────────────────")
+        print("사물함 번호 | 회원  | 남은 기간 | ")
+        print("───────────────────────────────────────")
+        
+        for l in self.lockers:
+            remaining_days = self.get_remaining_days(current_datetime=current_datetime, locker=l) if l.user_id!="" else "-"
+            user_id = l.user_id if l.user_id != "" else "-"
+            print(f"{l.id}  {user_id}  {remaining_days}")
+        print("───────────────────────────────────────")
+
+    def is_occupied(self, id: str) -> bool:
+        """사물함이 사용중인지 반환합니다."""
+        return bool(next((l.user_id for l in self.lockers if l.id == id), None))
+    
     
     def get_empty_locker_count(self) -> int:
         """비어있는 사물함 개수를 반환합니다."""
@@ -114,3 +141,7 @@ class LockerSystem:
         locker.user_id = ""
         self.save_lockers()
         return True, f"사물함 {locker.id}번이 해제되었습니다."
+
+    def release_locker_forced(self, id: str) -> bool:
+        user_id= next((l.user_id for l in self.lockers if l.id == id), None)
+        return self.release_locker(user_id=user_id)[0]

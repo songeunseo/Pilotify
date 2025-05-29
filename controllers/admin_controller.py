@@ -36,6 +36,24 @@ def show_admin_menu(current_datetime: datetime):
         elif choice == '5':
             break
 
+def locker_forced_eviction(locker_system: LockerSystem, current_datetime:datetime)-> None:
+    """사물함을 강제퇴거합니다."""
+    print("\n───────────────────────────────────────")
+    print("[ 사물함 강제 퇴거 ] \n")
+    locker_system.print_locker_status(current_datetime = current_datetime)
+    user_input = input("강제 퇴거할 사물함 번호를 입력해주세요 >>")
+
+    if not re.fullmatch(r"^\d{2}$", user_input):
+        print("[오류] 입력 형식에 맞지 않습니다.")
+        return
+    elif not locker_system.is_occupied(user_input):
+        print("[오류] 이용 중인 사물함이 아닙니다.")
+        return
+    else:
+        locker_system.release_locker_forced(id = id)
+        print("강제 퇴거 완료되었습니다.") 
+    return  
+
 def set_locker_count(locker_system: LockerSystem):
     """사물함 개수를 설정합니다."""
     print("\n───────────────────────────────────────")
