@@ -11,7 +11,7 @@ def show_admin_menu(current_datetime: datetime):
         print("[ 관리자 메뉴 ]")
         print("───────────────────────────────────────")
         print("1. 수업 취소 승인 (구현 예정)")
-        print("2. 사물함 강제 퇴거 (구현 예정)")
+        print("2. 사물함 강제 퇴거")
         print("3. 사물함 개수 설정")
         print("4. 강사 인증 코드 수정")
         print("5. 로그아웃")
@@ -27,8 +27,7 @@ def show_admin_menu(current_datetime: datetime):
             print("[안내] 수업 취소 승인 기능은 구현 예정입니다.\n")
             pass # TODO: 수업 취소 승인 기능 구현
         elif choice == '2':
-            print("[안내] 사물함 강제 퇴거 기능은 구현 예정입니다.\n")
-            pass # TODO: 사물함 강제 퇴거 기능 구현
+            locker_forced_eviction(locker_system, current_datetime)
         elif choice == '3':
             set_locker_count(locker_system)
         elif choice == '4':
