@@ -22,32 +22,36 @@ def login(user_type: str):
             user_list = member_list
         elif user_type == USER_TYPE_INSTRUCTOR:
             user_list = instructor_list
-        elif user_type == USER_TYPE_ADMIN:
-            if id == "Admin":
-                views.print_login()
-                pw = views.prompt_pw()
-                if pw == "0000":
-                    return SUCCESS
-                else:
-                    print("[오류] 비밀번호가 맞지 않습니다.\n")
-                    return None
-            else: 
-                print("[오류] 틀린 아이디입니다.\n")
-                return None
-            
-        res, user = utils.validate_login_id(id, user_list)
 
-        if res == SUCCESS:
-            break
-        print("[오류] 존재하지 않는 아이디입니다.\n")
+        if user_type == USER_TYPE_ADMIN:
+            if id == "Admin":
+                break
+            else:
+                print("[오류] 틀린 아이디입니다.\n")
+            
+        else: 
+            res, user = utils.validate_login_id(id, user_list)
+
+            if res == SUCCESS:
+                break
+            else: 
+                print("[오류] 존재하지 않는 아이디입니다.\n")
 
     while True:
         views.print_login()
         pw = views.prompt_pw()
 
-        if user.pw == pw:
-            break
-        print("[오류] 비밀번호가 맞지 않습니다.")
+        if user_type == USER_TYPE_ADMIN:
+            if pw == "0000":
+                user = None
+                break
+            else:
+                print("[오류] 비밀번호가 맞지 않습니다.\n")
+        else:
+            if user.pw == pw:
+                break
+            else: 
+                print("[오류] 비밀번호가 맞지 않습니다.")
     print("로그인이 완료되었습니다.")
     return user
         

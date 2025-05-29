@@ -49,27 +49,32 @@ def main():
         else:
           break
 
+        
+        if user_type != USER_TYPE_ADMIN:
+          while True: 
+            ## 회원가입 혹은 로그인을 선택
+            views.print_register_login_menu()
+            register_login_choice = views.prompt_menu_choice()
+            if re.fullmatch(r'[1-3]', register_login_choice):
+              break
+            print("[오류] 1~3 숫자만 가능합니다.")
 
-        while True: 
-          ## 회원가입 혹은 로그인을 선택
-          views.print_register_login_menu()
-          register_login_choice = views.prompt_menu_choice()
-          if re.fullmatch(r'[1-3]', register_login_choice):
-            break
-          print("[오류] 1~3 숫자만 가능합니다.")
 
+          ## 회원가입
+          if register_login_choice == "1":
+            user = signup(user_type)
 
-        ## 회원가입
-        if register_login_choice == "1":
-          user = signup(user_type)
+          ## 로그인 
+          elif register_login_choice == "2":
+            user = login(user_type)
 
-        ## 로그인 
-        elif register_login_choice == "2":
-          user = login(user_type)
+          ## 시작 메뉴로 돌아가기
+          else:
+            continue
 
-        ## 시작 메뉴로 돌아가기
         else:
-          continue
+           res = login(user_type)
+           show_admin_menu(current_datetime)
 
         ## 강사 화면
         if user_type == USER_TYPE_INSTRUCTOR:
@@ -78,10 +83,7 @@ def main():
         ## 회원 화면
         elif user_type == USER_TYPE_MEMBER:
            system = MemberSystem(user.id, current_datetime)
-           system.show_menu()
-
-        elif user_type == USER_TYPE_ADMIN and user == SUCCESS:
-            show_admin_menu(current_datetime)
+           system.show_menu()            
            
            
 if __name__ == '__main__':
