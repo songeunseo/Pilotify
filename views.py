@@ -28,7 +28,7 @@ def print_main_menu():
     print("1. 회원\n")
     print("2. 강사\n")
     print("3. 관리자\n")
-    print("3. 종료\n")
+    print("4. 종료\n")
     print("───────────────────────────────────────\n")
 
 def print_register_login_menu():
