@@ -38,7 +38,7 @@ class LockerSystem:
         expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
         remaining_days = current_datetime-expire_date
 
-        if(remaining_days<=0):
+        if(remaining_days<0):
             locker.user_id = ""
         
         self.save_lockers()
