@@ -1,8 +1,8 @@
 import csv
 import re
 import os
-from constants import SUCCESS, BASIC_ERROR, MEMBER_PATH, INSTRUCTOR_PATH, DATETIME_PATH
-from datetime import datetime
+from constants import SUCCESS, BASIC_ERROR, MEMBER_PATH, INSTRUCTOR_PATH, DATETIME_PATH, RESERVATION_PATH
+from datetime import datetime, date
 from file_handler import read_csv, write_csv
 
 def validate_datetime_input(user_input: str) -> int:
@@ -51,3 +51,23 @@ def validate_login_id(id: str, user_list: list):
             return SUCCESS, user
     
     return BASIC_ERROR, None
+
+def has_minimum_reservations(user_id: str, start: date, end: date, min_count: int = 2) -> bool:
+    try:
+        with open(RESERVATION_PATH, newline='', encoding='utf-8') as csvfile:
+            reader = csv.DictReader(csvfile)
+            count = 0
+            for row in reader:
+                try:
+                    class_date = datetime.strptime(row["날짜"], "%y%m%d").date()
+                    if start <= class_date <= end:
+                        student_ids = [s.strip() for s in row["수강 회원 id 리스트"].split(",")]
+                        if user_id in student_ids:
+                            count += 1
+                    if count >= min_count:
+                        return True
+                except Exception:
+                    continue
+    except FileNotFoundError:
+        pass
+    return False
