@@ -14,9 +14,9 @@ class LockerSystem:
         try:
             # 파일이 비어있거나 헤더만 있는 경우 빈 리스트 반환
             data = read_csv(LOCKER_PATH)
-                if not data: # 데이터 행이 없는 경우
-                    return []
-                return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
+            if not data: # 데이터 행이 없는 경우
+                return []
+            return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
         except FileNotFoundError:
             # 파일이 없으면 빈 리스트 반환
             return []
@@ -30,8 +30,7 @@ class LockerSystem:
         try:
             write_csv(LOCKER_PATH, data)
         except Exception as e:
-             print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
-
+            print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
     
     def get_empty_locker_count(self) -> int:
         """비어있는 사물함 개수를 반환합니다."""
