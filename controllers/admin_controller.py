@@ -33,6 +33,7 @@ def show_admin_menu(current_datetime: datetime):
         elif choice == '4':
             set_instructor_code(current_datetime)
         elif choice == '5':
+            locker_system.save_lockers()
             break
 
 def locker_forced_eviction(locker_system: LockerSystem, current_datetime:datetime)-> None:
@@ -49,7 +50,7 @@ def locker_forced_eviction(locker_system: LockerSystem, current_datetime:datetim
         print("[오류] 이용 중인 사물함이 아닙니다.")
         return
     else:
-        locker_system.release_locker_forced(id = id)
+        locker_system.release_locker_forced(user_input)
         print("강제 퇴거 완료되었습니다.") 
     return  
 

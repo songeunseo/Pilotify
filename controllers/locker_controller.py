@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 import re
 from typing import List
 from models import Locker
@@ -17,7 +17,7 @@ class LockerSystem:
             data = read_csv(LOCKER_PATH)
             if not data: # 데이터 행이 없는 경우
                 return []
-            return [Locker(id=row['id'], user_id=row['user_id']) for row in data]
+            return [Locker(id=row['id'], user_id=row['user_id'], expire_date=row['expire_date']) for row in data]
         except FileNotFoundError:
             # 파일이 없으면 빈 리스트 반환
             return []
@@ -35,14 +35,17 @@ class LockerSystem:
 
     def get_remaining_days(self, current_datetime:datetime, locker: Locker) -> int:
         """남은 일수를 반환합니다."""
-        expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
-        remaining_days = current_datetime-expire_date
+        if locker.user_id != "":
+            expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
+            remaining_days = expire_date - current_datetime
 
-        if(remaining_days<0):
-            locker.user_id = ""
-        
-        self.save_lockers()
-        return remaining_days
+            if(remaining_days.days<0):
+                locker.user_id = ""
+                locker.expire_date = ''
+            
+            self.save_lockers()
+            return remaining_days.days
+        return -1
     
     def print_locker_status(self, current_datetime: datetime) -> None:
         print("───────────────────────────────────────")
@@ -50,9 +53,11 @@ class LockerSystem:
         print("───────────────────────────────────────")
         
         for l in self.lockers:
-            remaining_days = self.get_remaining_days(current_datetime=current_datetime, locker=l) if l.user_id!="" else "-"
+            remaining_days = self.get_remaining_days(current_datetime=current_datetime, locker=l)
+            if l.user_id == "":
+                remaining_days = "-"
             user_id = l.user_id if l.user_id != "" else "-"
-            print(f"{l.id}  {user_id}  {remaining_days}")
+            print(f"{l.id}       {user_id}        {remaining_days}")
         print("───────────────────────────────────────")
 
     def is_occupied(self, id: str) -> bool:
@@ -98,7 +103,7 @@ class LockerSystem:
             # 부족한 만큼 빈 사물함 추가
             for i in range(current_count, new_count):
                 # 사물함 ID는 1부터 시작, 0 채움 2자리
-                self.lockers.append(Locker(id=f"{i+1:02d}", user_id=""))
+                self.lockers.append(Locker(id=f"{i+1:02d}", user_id="", expire_date=""))
 
         # 현재 사물함 개수보다 줄이는 경우
         elif new_count < current_count:
@@ -139,9 +144,12 @@ class LockerSystem:
         
         # 2. 사물함 해제 및 저장
         locker.user_id = ""
+        locker.expire_date = ''
         self.save_lockers()
         return True, f"사물함 {locker.id}번이 해제되었습니다."
 
     def release_locker_forced(self, id: str) -> bool:
+        # print(self.lockers)
         user_id= next((l.user_id for l in self.lockers if l.id == id), None)
+        # print(user_id)
         return self.release_locker(user_id=user_id)[0]
