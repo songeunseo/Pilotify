@@ -19,6 +19,7 @@ class LockerSystem:
             data = read_csv(LOCKER_PATH)
             if not data: # 데이터 행이 없는 경우
                 return []
+              
             return [
                     Locker(
                         id=row['id'],
@@ -52,14 +53,18 @@ class LockerSystem:
 
     def get_remaining_days(self, current_datetime:datetime, locker: Locker) -> int:
         """남은 일수를 반환합니다."""
-        expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
-        remaining_days = current_datetime-expire_date
+        if locker.user_id != "":
+            expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
+            remaining_days = expire_date - current_datetime
 
-        if(remaining_days< timedelta(days=0)):
-            locker.user_id = ""
-        
-        self.save_lockers()
-        return remaining_days.days
+            if(remaining_days.days<0):
+                locker.user_id = ""
+                locker.expire_date = ''
+            
+            self.save_lockers()
+            return remaining_days.days
+        return -1
+
     
     def print_locker_status(self, current_datetime: datetime) -> None:
         print("───────────────────────────────────────")
@@ -67,9 +72,11 @@ class LockerSystem:
         print("───────────────────────────────────────")
         
         for l in self.lockers:
-            remaining_days = self.get_remaining_days(current_datetime=current_datetime, locker=l) if l.user_id!="" else "-"
+            remaining_days = self.get_remaining_days(current_datetime=current_datetime, locker=l)
+            if l.user_id == "":
+                remaining_days = "-"
             user_id = l.user_id if l.user_id != "" else "-"
-            print(f"{l.id}  {user_id}  {remaining_days}")
+            print(f"{l.id}       {user_id}        {remaining_days}")
         print("───────────────────────────────────────")
 
     def is_occupied(self, id: str) -> bool:
@@ -198,8 +205,7 @@ class LockerSystem:
         locker = self.get_user_locker(user_id)
         if not locker:
             return False, "현재 사용 중인 사물함이 없습니다."
-        
-        if locker.extended:
+         if locker.extended:
             return False, "이미 연장된 사물함은 추가 연장이 불가능합니다."
         
         # 예약 조건 검증
@@ -217,3 +223,10 @@ class LockerSystem:
         remaining = (new_expire - today).days
         self.save_lockers()
         return True, f"{locker.id}번 사물함 사용 기간이 연장되었습니다.\n남은 일수: {remaining}일"
+
+
+    def release_locker_forced(self, id: str):
+        # print(self.lockers)
+        user_id= next((l.user_id for l in self.lockers if l.id == id), None)
+        # print(user_id)
+        self.release_locker(user_id=user_id)
