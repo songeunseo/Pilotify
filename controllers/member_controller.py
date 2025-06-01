@@ -1,7 +1,8 @@
 import csv
 import os,sys
 from file_handler import load_member_data, load_instructor_data
-from datetime import datetime
+from controllers.locker_controller import LockerSystem
+from datetime import datetime, timedelta
 from constants import RESERVATION_PATH
 import re
 
@@ -56,7 +57,7 @@ class MemberSystem:
     def show_menu(self):
         while True:
             print("───────────────────────────────────────────────")
-            print("1. 수업 신청\n2. 수업 취소\n3. 신청 수업 조회\n4. 로그아웃")
+            print("1. 수업 신청\n2. 수업 취소\n3. 신청 수업 조회\n4. 사물함 신청\n5. 사물함 연장\n6. 로그아웃")
             print("───────────────────────────────────────────────")
             choice = input("숫자를 입력해주세요 >> ")
 
@@ -72,6 +73,10 @@ class MemberSystem:
             elif choice == "3":
                 self.view_enrollments()
             elif choice == "4":
+                self.apply_for_locker()
+            elif choice == "5":
+                self.extend_locker()
+            elif choice == "6":
                 print("로그아웃되었습니다.")
                 break
 
@@ -165,6 +170,58 @@ class MemberSystem:
                     '정원': c.capacity,
                     '수강 회원 id 리스트': ",".join(c.enrolled_user_ids)
                 })
+    def apply_for_locker(self):
+        print("───────────────────────────────────────")
+        print("[ 사물함 신청 ]")
+        print("───────────────────────────────────────")
+
+        locker_system = LockerSystem()
+
+        # 1. 현재 회원이 이미 사물함을 사용 중인지 확인
+        existing_locker = locker_system.get_user_locker(self.username)
+        if existing_locker:
+            print(f"[오류] 이미 {existing_locker.id}번 사물함 이용 중입니다.")
+            return
+
+        # 2. 신청일 포함 7일간 수업 예약이 2타임 이상인지 확인
+        today = self.current_datetime.date()
+        week_later = today + timedelta(days=6)
+
+        reservation_count = 0
+        for session in self.class_list:
+            try:
+                session_date = datetime.strptime(session.date, "%y%m%d").date()
+            except ValueError:
+                continue  # 날짜 파싱이 실패한 경우 무시
+
+            if today <= session_date <= week_later:
+                if self.username in session.enrolled_user_ids:
+                    reservation_count += 1
+
+        if reservation_count < 2:
+            print("[오류] 사물함 신청은 신청일 기준 일주일에 2타임 이상 수업 예약이 있는 회원만 가능합니다.")
+            return
+
+        # 3. 빈 사물함이 존재하는지 확인하고 배정 시도
+        success, message = locker_system.assign_locker(self.username, self.current_datetime.date())
+        if success:
+            print(f"{message}")
+        else:
+            print(f"[오류] {message}")
+            
+    def extend_locker(self):
+        print("───────────────────────────────────────")
+        print("[ 사물함 연장 신청 ]")
+        print("───────────────────────────────────────")
+
+        locker_system = LockerSystem()
+        today = self.current_datetime.date()
+
+        success, message = locker_system.extend_locker(self.username, today)
+        if success:
+            print(message)
+        else:
+            print(f"[오류] {message}")
 '''
 if __name__ == "__main__":
     user_id = "park124"

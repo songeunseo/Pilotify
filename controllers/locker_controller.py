@@ -1,10 +1,12 @@
 import csv
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import re
 from typing import List
 from models import Locker
+from utils import has_minimum_reservations
 from constants import LOCKER_PATH, MAX_LOCKERS
 from file_handler import read_csv, write_csv
+
 
 class LockerSystem:
     def __init__(self):
@@ -17,7 +19,17 @@ class LockerSystem:
             data = read_csv(LOCKER_PATH)
             if not data: # 데이터 행이 없는 경우
                 return []
-            return [Locker(id=row['id'], user_id=row['user_id'], expire_date=row['expire_date']) for row in data]
+              
+            return [
+                    Locker(
+                        id=row['id'],
+                        user_id=row['user_id'],
+                        expire_date=row.get('expire_date', ""),  # 예외 없애기 위해 .get 사용
+                        locker_status=row.get('locker_status', "empty"),  # 기본값 empty
+                        extended=(row.get('extended', 'False') == 'True')
+                        )
+                        for row in data
+                    ]
         except FileNotFoundError:
             # 파일이 없으면 빈 리스트 반환
             return []
@@ -27,7 +39,13 @@ class LockerSystem:
     
     def save_lockers(self):
         """사물함 데이터를 저장합니다."""
-        data = [{'id': l.id, 'user_id': l.user_id, "expire_date": l.expire_date} for l in self.lockers]
+        data = [{
+    'id': l.id,
+    'user_id': l.user_id,
+    'expire_date': l.expire_date,
+    'locker_status': l.locker_status,
+    'extended': str(l.extended)
+} for l in self.lockers]
         try:
             write_csv(LOCKER_PATH, data)
         except Exception as e:
@@ -46,6 +64,7 @@ class LockerSystem:
             self.save_lockers()
             return remaining_days.days
         return -1
+
     
     def print_locker_status(self, current_datetime: datetime) -> None:
         print("───────────────────────────────────────")
@@ -103,7 +122,13 @@ class LockerSystem:
             # 부족한 만큼 빈 사물함 추가
             for i in range(current_count, new_count):
                 # 사물함 ID는 1부터 시작, 0 채움 2자리
-                self.lockers.append(Locker(id=f"{i+1:02d}", user_id="", expire_date=""))
+                self.lockers.append(Locker(
+                id=f"{i+1:02d}",
+                user_id="",
+                expire_date="",
+                locker_status="empty",
+                extended=False
+            ))
 
         # 현재 사물함 개수보다 줄이는 경우
         elif new_count < current_count:
@@ -119,37 +144,89 @@ class LockerSystem:
         self.save_lockers()
         return True, f"사물함 개수 {new_count}개로 변경 완료되었습니다."
     
-    def assign_locker(self, user_id: str) -> tuple[bool, str]:
-        """사용자에게 사물함을 할당합니다. (회원당 1개 제한 포함)"""
-        # 1. 이미 사물함을 사용 중인지 확인
-        if self.get_user_locker(user_id):
-            return False, "이미 사물함을 사용 중입니다. (회원당 1개 제한)"
+    def assign_locker(self, user_id: str, today: date) -> tuple[bool, str]:
+        existing_locker = self.get_user_locker(user_id)
+        if existing_locker:
+            expire_date = datetime.strptime(existing_locker.expire_date, "%y%m%d").date()
+            remaining = (expire_date - today).days
+            return False, f"이미 {existing_locker.id}번 사물함을 이용 중입니다.\n남은 일수: {remaining}일"
         
-        # 2. 빈 사물함 찾기
-        empty_locker = next((l for l in self.lockers if l.is_empty()), None)
-        if not empty_locker:
-            return False, "사용 가능한 사물함이 없습니다."
-        
-        # 3. 사물함 할당 및 저장
+        empty_lockers = sorted([l for l in self.lockers if l.is_empty()], key=lambda x: x.id)
+        if not empty_lockers:
+            return False, "남은 사물함이 없습니다."
+
+        # 수업 예약 조건 확인
+        check_end = today + timedelta(days=6)
+        if not has_minimum_reservations(user_id, today, check_end):
+            return False, "사물함 신청은 신청일 기준 일주일에 2타임 이상 수업 예약이 있는 회원만 가능합니다."
+
+        # 필드 업데이트
+        empty_locker = empty_lockers[0]
         empty_locker.user_id = user_id
+        empty_locker.expire_date = (today + timedelta(days=6)).strftime("%y%m%d")
+        empty_locker.locker_status = "occupied"
         self.save_lockers()
-        return True, f"사물함 {empty_locker.id}번이 할당되었습니다."
+        return True, f"{empty_locker.id}번 사물함이 배정되었습니다."
     
-    def release_locker(self, user_id: str) -> tuple[bool, str]:
-        """사용자의 사물함을 해제합니다."""
-        # 1. 사용자의 사물함 찾기
+    def release_locker(self, user_id: str):
+        locker = self.get_user_locker(user_id)
+        if locker:
+            locker.user_id = ""
+            locker.expire_date = ""
+            locker.locker_status = "empty"
+            locker.extended = False  # 연장 상태 초기화
+            self.save_lockers()
+    
+    def expire_lockers(self, today: date) -> None:
+        expired_lockers = []
+        
+        # 1단계: 만료 대상 식별
+        for locker in self.lockers:
+            if locker.locker_status != "occupied":
+                continue
+                
+            try:
+                expire_date = datetime.strptime(locker.expire_date, "%y%m%d").date()
+            except ValueError:
+                expired_lockers.append(locker)
+                continue
+                
+            if expire_date < today:
+                expired_lockers.append(locker)
+
+        # 2단계: 직접 필드 초기화
+        for locker in expired_lockers:
+            self.release_locker(locker.user_id)  
+    
+        if expired_lockers:
+            self.save_lockers()  # 변경사항 저장
+
+    def extend_locker(self, user_id: str, today: date) -> tuple[bool, str]:
         locker = self.get_user_locker(user_id)
         if not locker:
-            return False, "사용 중인 사물함이 없습니다."
+            return False, "현재 사용 중인 사물함이 없습니다."
+         if locker.extended:
+            return False, "이미 연장된 사물함은 추가 연장이 불가능합니다."
         
-        # 2. 사물함 해제 및 저장
-        locker.user_id = ""
-        locker.expire_date = ''
-        self.save_lockers()
-        return True, f"사물함 {locker.id}번이 해제되었습니다."
+        # 예약 조건 검증
+        expire_date = datetime.strptime(locker.expire_date, "%y%m%d").date()
 
-    def release_locker_forced(self, id: str) -> bool:
+        check_start = expire_date + timedelta(days=1)
+        check_end = check_start + timedelta(days=6)
+        if not has_minimum_reservations(user_id, check_start, check_end):
+            return False, "연장은 사물함 기존 종료일 이후 7일 동안 수업 예약이 2타임 이상 있어야 가능합니다."
+        
+        # 7일 연장 처리
+        new_expire = expire_date + timedelta(days=7)
+        locker.expire_date = new_expire.strftime("%y%m%d")
+        locker.extended = True
+        remaining = (new_expire - today).days
+        self.save_lockers()
+        return True, f"{locker.id}번 사물함 사용 기간이 연장되었습니다.\n남은 일수: {remaining}일"
+
+
+    def release_locker_forced(self, id: str):
         # print(self.lockers)
         user_id= next((l.user_id for l in self.lockers if l.id == id), None)
         # print(user_id)
-        return self.release_locker(user_id=user_id)[0]
+        self.release_locker(user_id=user_id)

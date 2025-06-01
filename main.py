@@ -7,8 +7,8 @@ from datetime import datetime
 from controllers.member_controller import MemberSystem
 from controllers.instructor_controller import show_instructor_menu
 from controllers.admin_controller import show_admin_menu
+from controllers.locker_controller import LockerSystem
 import re
-from controllers.admin_controller import  show_admin_menu
 
 def main():
     ## 제목 출력
@@ -31,6 +31,8 @@ def main():
         break
             
     while True: 
+        locker_system = LockerSystem()
+        locker_system.expire_lockers(current_datetime.date())
         while True: 
           ## 회원 혹은 강사를 선택
           views.print_main_menu()
@@ -78,7 +80,7 @@ def main():
 
         ## 강사 화면
         if user_type == USER_TYPE_INSTRUCTOR:
-          show_instructor_menu(user, current_datetime)
+          show_instructor_menu(user, current_datetime) # type: ignore
 
         ## 회원 화면
         elif user_type == USER_TYPE_MEMBER:

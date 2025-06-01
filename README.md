@@ -25,6 +25,7 @@ Pilotify/
 │   ├── members.csv              # 회원 정보 저장 (CSV 파일)
 │   ├── instructors.csv          # 강사 정보 저장 (CSV 파일)
 │   ├── reservations.csv         # 예약 정보 저장 (CSV 파일)
+│   ├── lockers.csv              # 사물함 정보 저장 (CSV 파일)
 │   └── datetime.csv             # 날짜/시간 정보 저장 (CSV 파일)
 │
 ├── constants.py                 # 상수 정의 파일
