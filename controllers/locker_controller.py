@@ -196,7 +196,7 @@ class LockerSystem:
 
         # 2단계: 직접 필드 초기화
         for locker in expired_lockers:
-            self.release_locker(locker.user_id)  
+            self.release_locker(locker.user_id)
     
         if expired_lockers:
             self.save_lockers()  # 변경사항 저장
@@ -205,7 +205,7 @@ class LockerSystem:
         locker = self.get_user_locker(user_id)
         if not locker:
             return False, "현재 사용 중인 사물함이 없습니다."
-         if locker.extended:
+        if locker.extended:
             return False, "이미 연장된 사물함은 추가 연장이 불가능합니다."
         
         # 예약 조건 검증
