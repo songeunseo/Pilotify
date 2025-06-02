@@ -66,7 +66,12 @@ def set_locker_count(locker_system: LockerSystem):
     print(f"[{'완료' if success else '오류'}] {message}\n")
 
 def set_instructor_code(current_datetime:datetime)->None:
-    rows = read_csv(INST_CODE_PATH)
+    try:
+        rows = read_csv(INST_CODE_PATH)
+    except FileNotFoundError:
+        print("[오류] 인증 코드 파일이 존재하지 않습니다.")
+        return
+    
     if not rows:
         last_modified_date = f"{current_datetime:%y%m%d}"
         current_code = "0000"
