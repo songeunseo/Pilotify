@@ -84,7 +84,7 @@ def main():
 
         ## 회원 화면
         elif user_type == USER_TYPE_MEMBER:
-           system = MemberSystem(user.id, current_datetime)
+           system = MemberSystem(user.id, user.name, current_datetime)
            system.show_menu()            
            
            
