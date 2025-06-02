@@ -1,9 +1,8 @@
 import csv
-import os,sys
-from file_handler import load_member_data, load_instructor_data
+from file_handler import *
 from controllers.locker_controller import LockerSystem
 from datetime import datetime, timedelta
-from constants import RESERVATION_PATH
+from constants import *
 import re
 
 class ClassSession:
@@ -28,7 +27,8 @@ class ClassSession:
     def __str__(self):
         return f"{self.session_id:<8} {self.date:<10} {self.instructor_name:<8} {self.time:<6} {self.capacity:<6} {len(self.enrolled_user_ids):<6}"
 class MemberSystem:
-    def __init__(self, username, current_datetime: datetime):
+    def __init__(self, user_id, username, current_datetime: datetime):
+        self.user_id = user_id
         self.username = username
         self.current_datetime = current_datetime
         self.teachers_name = {instructor.id: instructor.name for instructor in load_instructor_data()}
@@ -37,39 +37,38 @@ class MemberSystem:
     
     def load_classes_from_csv(self):
         class_list = []
-        with open(RESERVATION_PATH, newline='', encoding='utf-8') as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                raw_users = row['수강 회원 id 리스트'].strip().strip('"')
-                user_ids = [uid.strip() for uid in raw_users.split(",")] if raw_users else []
-                class_list.append(ClassSession(
-                    session_id=row['아이디'].strip(),
-                    date=row['날짜'].strip(),
-                    time=row['타임'].strip(),
-                    teacher_id=row['강사 id'].strip(),
-                    enrolled_user_ids=user_ids,
-                    capacity=int(row['정원'].strip()),
-                    instructor_names=self.teachers_name
-                ))
+        reservations = read_csv(RESERVATION_PATH)
+        
+        for row in reservations:
+            raw_users = row['수강 회원 id 리스트'].strip().strip('"')
+            user_ids = [uid.strip() for uid in raw_users.split(",")] if raw_users else []
+            class_list.append(ClassSession(
+                session_id=row['아이디'].strip(),
+                date=row['날짜'].strip(),
+                time=row['타임'].strip(),
+                teacher_id=row['강사 id'].strip(),
+                enrolled_user_ids=user_ids,
+                capacity=int(row['정원'].strip()),
+                instructor_names=self.teachers_name
+            ))
         return class_list
 
- 
     def show_menu(self):
         while True:
             print("───────────────────────────────────────────────")
-            print("1. 수업 신청\n2. 수업 취소\n3. 신청 수업 조회\n4. 사물함 신청\n5. 사물함 연장\n6. 로그아웃")
+            print("1. 수업 신청\n2. 수업 취소 신청\n3. 신청 수업 조회\n4. 사물함 신청\n5. 사물함 연장\n6. 로그아웃")
             print("───────────────────────────────────────────────")
             choice = input("숫자를 입력해주세요 >> ")
 
             # 공백 검사 + 숫자 검사 + 범위 검사
-            if not re.fullmatch(r'[1-4]', choice):
-                print("[오류] 1~4 숫자만 가능합니다")
+            if not re.fullmatch(r'[1-6]', choice):
+                print("[오류] 1~6 숫자만 가능합니다")
                 continue
 
             if choice == "1":
                 self.apply_class()
             elif choice == "2":
-                self.cancel_class()
+                self.cancel_class() # 수정 예정
             elif choice == "3":
                 self.view_enrollments()
             elif choice == "4":
@@ -103,12 +102,12 @@ class MemberSystem:
                 print("[오류] 해당하는 수업 ID가 존재하지 않습니다.")
             elif target.is_past(self.current_datetime):
                 print("[오류] 이미 지난 수업입니다.")
-            elif self.username in target.enrolled_user_ids:
+            elif self.user_id in target.enrolled_user_ids:
                 print("[오류] 이미 신청된 수업입니다.")
             elif target.is_full():
                 print("[오류] 수강이 마감된 수업입니다.")
             else: 
-                target.enrolled_user_ids.append(self.username)
+                target.enrolled_user_ids.append(self.user_id)
                 self.save_classes_to_csv(RESERVATION_PATH)
                 print("신청 완료되었습니다.")
                 break
@@ -141,20 +140,40 @@ class MemberSystem:
         self.save_classes_to_csv(RESERVATION_PATH) 
         print("취소되었습니다.")
         return
-    # 확인 
 
     def view_enrollments(self):
+        print("신청된 수업")
         print("───────────────────────────────────────────────")
         print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
-        found = False
+        found_enrolled = False
         for c in self.class_list:
-            if self.username in c.enrolled_user_ids:
+            if self.user_id in c.enrolled_user_ids:
                 print(c.__str__())
-                found = True
-        if not found:
-            print("신청한 수업이 없습니다.")
+                found_enrolled = True
         print("───────────────────────────────────────────────")
-        input("엔터키를 누르면 메뉴 화면으로 돌아갑니다 >> ")
+
+        # 취소 대기 중인 수업
+        cancellations = read_csv(CANCELLATION_PATH)
+        user_cancellations = [cancel for cancel in cancellations if cancel['user_id'].strip() == self.user_id]
+        found_cancelled = False
+        
+        if user_cancellations:
+            print("취소 대기 중인 수업")
+            print("───────────────────────────────────────────────")
+            print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
+            print("───────────────────────────────────────────────")
+            for cancel in user_cancellations:
+                class_id = cancel['class_id'].strip()
+                target_class = next((c for c in self.class_list if c.session_id == class_id), None)
+                if target_class:
+                    print(target_class.__str__())
+                    found_cancelled = True
+            print("───────────────────────────────────────────────")
+        
+        if not found_enrolled and not found_cancelled:
+            print("[오류] 신청되거나 취소 대기중인 수업이 없습니다.")
+        
+        input("아무 키나 누르면 메뉴 화면으로 돌아갑니다 >> ")
 
     def save_classes_to_csv(self, path):
         with open(path, 'w', newline='', encoding='utf-8') as csvfile:
@@ -170,6 +189,7 @@ class MemberSystem:
                     '정원': c.capacity,
                     '수강 회원 id 리스트': ",".join(c.enrolled_user_ids)
                 })
+    
     def apply_for_locker(self):
         print("───────────────────────────────────────")
         print("[ 사물함 신청 ]")
@@ -178,7 +198,7 @@ class MemberSystem:
         locker_system = LockerSystem()
 
         # 1. 현재 회원이 이미 사물함을 사용 중인지 확인
-        existing_locker = locker_system.get_user_locker(self.username)
+        existing_locker = locker_system.get_user_locker(self.user_id)
         if existing_locker:
             print(f"[오류] 이미 {existing_locker.id}번 사물함 이용 중입니다.")
             return
@@ -195,7 +215,7 @@ class MemberSystem:
                 continue  # 날짜 파싱이 실패한 경우 무시
 
             if today <= session_date <= week_later:
-                if self.username in session.enrolled_user_ids:
+                if self.user_id in session.enrolled_user_ids:
                     reservation_count += 1
 
         if reservation_count < 2:
@@ -203,7 +223,7 @@ class MemberSystem:
             return
 
         # 3. 빈 사물함이 존재하는지 확인하고 배정 시도
-        success, message = locker_system.assign_locker(self.username, self.current_datetime.date())
+        success, message = locker_system.assign_locker(self.user_id, self.current_datetime.date())
         if success:
             print(f"{message}")
         else:
@@ -217,7 +237,7 @@ class MemberSystem:
         locker_system = LockerSystem()
         today = self.current_datetime.date()
 
-        success, message = locker_system.extend_locker(self.username, today)
+        success, message = locker_system.extend_locker(self.user_id, today)
         if success:
             print(message)
         else:

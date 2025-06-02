@@ -19,6 +19,7 @@ USER_TYPE_ADMIN = 'a'
 MEMBER_PATH = 'data/members.csv'
 INSTRUCTOR_PATH = 'data/instructors.csv'
 RESERVATION_PATH = 'data/reservations.csv'
+CANCELLATION_PATH = 'data/request_cancel_class.csv'
 DATETIME_PATH = 'data/datetime.csv'
 INST_CODE_PATH = 'data/instructor_code.csv'
 
