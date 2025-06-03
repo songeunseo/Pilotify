@@ -68,7 +68,7 @@ class MemberSystem:
             if choice == "1":
                 self.apply_class()
             elif choice == "2":
-                self.cancel_class() # 수정 예정
+                self.request_cancellation(self.user_id, self.username)
             elif choice == "3":
                 self.view_enrollments()
             elif choice == "4":
@@ -242,18 +242,78 @@ class MemberSystem:
             print(message)
         else:
             print(f"[오류] {message}")
-'''
-if __name__ == "__main__":
-    user_id = "park124"
-    raw_date = "250409"
-    raw_time = "23:59"
 
-    if len(raw_date) != 6 or len(raw_time) != 5 or raw_time[2] != ':':
-        print("[오류] 날짜 또는 시간 형식이 잘못되었습니다.")
-        exit()
+    def request_cancellation(self, user_id, user_name) -> int:
+        # CSV 파일에서 데이터 읽기
+        reservations = read_csv(RESERVATION_PATH)
+        cancellations = read_csv(CANCELLATION_PATH)
+        
+        # 사용자가 신청한 수업 ID와 수업 데이터 찾기
+        reservations_class_id = [] # 해당 회원이 등록한 수업 ID 리스트
+        user_reservations = [] # 해당 회원이 등록한 수업 객체 리스트
 
-    hhmm = raw_time.replace(":", "")
-    current_ymdhm = int(raw_date + hhmm)
-    system = MemberSystem(user_id, current_ymdhm)
-    system.show_menu()
-'''
+        for row in reservations:
+            raw_users = row['수강 회원 id 리스트'].strip().strip('"')
+            user_ids = [uid.strip() for uid in raw_users.split(",")] if raw_users else []
+            if user_id in user_ids:
+                reservations_class_id.append(row['아이디'].strip())
+                user_reservations.append(row)
+        
+        # 이미 취소 신청한 수업 ID 찾기
+        cancellations_class_id = [] # 해당 회원이 취소 신청한 수업 ID 리스트
+        for row in cancellations:
+            if row['user_id'].strip() == user_id:
+                cancellations_class_id.append(row['class_id'].strip())
+        
+        # 취소 가능한 수업 ID 찾기
+        available_class_id = [cid for cid in reservations_class_id if cid not in cancellations_class_id]
+        
+        # 취소 가능한 수업 데이터 찾기
+        available_reservations = [] # 해당 회원이 취소 신청할 수 있는 수업 객체 리스트
+        for row in user_reservations:
+            if row['아이디'].strip() in available_class_id:
+                available_reservations.append(row)
+        
+        # 취소 가능한 수업 목록 출력
+        print("───────────────────────────────────────────────")
+        print(" 수업 ID |  날짜  |  이름  | 타임 |정원|신청 인원|")
+        print("───────────────────────────────────────────────")
+        for row in available_reservations:
+            raw_users = row['수강 회원 id 리스트'].strip().strip('"')
+            user_ids = [uid.strip() for uid in raw_users.split(",")] if raw_users else []
+            teacher_name = self.teachers_name.get(row['강사 id'].strip(), "Unknown")
+            print(f"{row['아이디'].strip():<8} {row['날짜'].strip():<10} {teacher_name:<8} {row['타임'].strip():<6} {row['정원'].strip():<6} {len(user_ids):<6}")
+        print("───────────────────────────────────────────────")
+        
+        # 취소할 수업 ID 입력 받기
+        cr_class_id = input("취소 신청할 수업 ID를 입력해주세요 >> ")
+        
+        # 1. 수업 ID 형식 검사
+        if not re.fullmatch(r'^\d{4}$', cr_class_id):
+            print("[오류] 수업 ID 형식에 맞지 않습니다.")
+            return -1
+        
+        # 2. 화면에 출력된 수업 ID인지 확인
+        if cr_class_id not in reservations_class_id:
+            print("[오류] 신청한 수업이 아닙니다.")
+            return -2
+        
+        # 3. 이미 취소 신청한 수업인지 확인
+        if cr_class_id not in available_class_id:
+            print("[오류] 해당 수업은 이미 취소 신청 중입니다.")
+            return -3
+        
+        # 취소 신청 데이터 추가
+        cr = {
+            'cancellation_id': str(len(cancellations) + 1),
+            'class_id': cr_class_id,
+            'user_id': user_id,
+            'user_name': user_name
+        }
+        cancellations.append(cr)
+        
+        # CSV 파일에 저장
+        write_csv(CANCELLATION_PATH, cancellations)
+        
+        print("취소 신청이 완료되었습니다.")
+        return 0

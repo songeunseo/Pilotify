@@ -24,8 +24,7 @@ def show_admin_menu(current_datetime: datetime):
             continue
 
         if choice == '1':
-            print("[안내] 수업 취소 승인 기능은 구현 예정입니다.\n")
-            pass # TODO: 수업 취소 승인 기능 구현
+            accept_cancellation()
         elif choice == '2':
             locker_forced_eviction(locker_system, current_datetime)
         elif choice == '3':
@@ -35,6 +34,63 @@ def show_admin_menu(current_datetime: datetime):
         elif choice == '5':
             locker_system.save_lockers()
             break
+
+def accept_cancellation()->int:
+    cancellations = read_csv(CANCELLATION_PATH)
+
+    # 1. 취소 신청 데이터 리스트 출력
+    print("───────────────────────────────────────────────")
+    print("[ 수업 취소 승인 ]")
+    print("───────────────────────────────────────────────")
+    print("취소 신청 ID | 수업 ID | 회원 이름 |")
+    print("───────────────────────────────────────────────")
+    for ca in cancellations:
+        print(f"{ca['cancellation_id']:<8}{ca['class_id']:<9}{ca['user_name']:<9}")
+    print("───────────────────────────────────────────────")
+
+    # 2. 승인할 수업 취소 ID 입력
+    ca_id = input("승인할 취소 신청 ID를 입력하세요 >> ")
+
+    # 3. 취소 신청 유효성 검증
+    if not cancellations:
+        print("[오류] 현재 취소 신청된 수업이 없습니다.")
+        return -1
+
+    # 4. ca_id값 검증
+    if not re.fullmatch(r'^\d+$', ca_id):
+        print("[오류] 입력 형식에 맞지 않습니다.")
+        return -2
+
+    # 5. 취소 신청 데이터에서 해당 항목 찾기
+    for cancellation in cancellations:
+        if cancellation['cancellation_id'] == ca_id:
+            ca_class_id = cancellation['class_id']
+            ca_member_id = cancellation['user_id']
+            # 해당 항목 제거
+            cancellations = [c for c in cancellations if c['cancellation_id'] != ca_id]
+            break
+    else:
+        print("[오류] 유효하지 않은 취소 신청 ID 입니다.")
+        return -3
+
+    # 데이터 로드
+    reservations = read_csv(RESERVATION_PATH)
+
+    # 6. 수업 데이터에서 해당 회원 제거
+    for reservation in reservations:
+        if reservation['아이디'].strip() == ca_class_id:
+            raw_users = reservation['수강 회원 id 리스트'].strip().strip('"')
+            user_ids = [uid.strip() for uid in raw_users.split(",")] if raw_users else []
+            if ca_member_id in user_ids:
+                user_ids.remove(ca_member_id)
+                reservation['수강 회원 id 리스트'] = ",".join(user_ids)
+
+    # 7. 파일 저장
+    write_csv(CANCELLATION_PATH, cancellations)
+    write_csv(RESERVATION_PATH, reservations)
+
+    print("취소 승인 완료되었습니다.")
+    return 0
 
 def locker_forced_eviction(locker_system: LockerSystem, current_datetime:datetime)-> None:
     """사물함을 강제퇴거합니다."""
@@ -52,7 +108,7 @@ def locker_forced_eviction(locker_system: LockerSystem, current_datetime:datetim
     else:
         locker_system.release_locker_forced(user_input)
         print("강제 퇴거 완료되었습니다.") 
-    return  
+    return
 
 def set_locker_count(locker_system: LockerSystem):
     """사물함 개수를 설정합니다."""
