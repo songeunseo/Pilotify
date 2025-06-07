@@ -1,0 +1,5 @@
+id,user_id,expire_date,locker_status,extended
+01,20230001,24/06/01,occupied,False
+02,,24/06/01,empty,False
+03,20230002,24/06/10,occupied,True
+04,,24/06/01,empty,False 

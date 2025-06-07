@@ -40,16 +40,22 @@ class LockerSystem:
     def save_lockers(self):
         """사물함 데이터를 저장합니다."""
         data = [{
-    'id': l.id,
-    'user_id': l.user_id,
-    'expire_date': l.expire_date,
-    'locker_status': l.locker_status,
-    'extended': str(l.extended)
-} for l in self.lockers]
+            'id': l.id,
+            'user_id': l.user_id,
+            'expire_date': l.expire_date,
+            'locker_status': l.locker_status,
+            'extended': str(l.extended)
+        } for l in self.lockers]
         try:
-            write_csv(LOCKER_PATH, data)
+            if not data:
+                # 데이터가 없으면 헤더만 남기기
+                with open(LOCKER_PATH, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.DictWriter(f, fieldnames=['id', 'user_id', 'expire_date', 'locker_status', 'extended'])
+                    writer.writeheader()
+            else:
+                write_csv(LOCKER_PATH, data)
         except Exception as e:
-             print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
+            print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
 
     def get_remaining_days(self, current_datetime:datetime, locker: Locker) -> int:
         """남은 일수를 반환합니다."""
@@ -98,13 +104,11 @@ class LockerSystem:
     
     def set_locker_count(self, new_count_str: str) -> tuple[bool, str]:
         """사물함 개수를 설정합니다."""
-        # 1. 입력값이 0 이상의 정수인지 검사
-        if not re.fullmatch(r'^\d+$', new_count_str):
+        # 1. 입력값이 0 이상의 정수인지 검사 (선행 0 금지, 단 '0'만 허용)
+        if not re.fullmatch(r'^(0|[1-9][0-9]*)$', new_count_str):
             return False, "입력 형식에 맞지 않습니다."
         
         new_count = int(new_count_str)
-        # 음수 검사는 이미 정규식에서 걸러짐
-        
         current_count = len(self.lockers)
         current_used = self.get_used_locker_count()
 
@@ -115,32 +119,29 @@ class LockerSystem:
         # 3. 사용 중인 사물함보다 적게 입력 시
         if new_count < current_used:
             return False, f"빈 사물함이 부족하여 최소 {current_used}개까지만 축소 가능합니다."
-        
-        # 4. 정상 처리
-        # 현재 사물함 개수보다 늘리는 경우
-        if new_count > current_count:
-            # 부족한 만큼 빈 사물함 추가
-            for i in range(current_count, new_count):
-                # 사물함 ID는 1부터 시작, 0 채움 2자리
-                self.lockers.append(Locker(
+
+        # 4. 사물함 재정렬 및 개수 조정
+        used_lockers = [l for l in self.lockers if not l.is_empty()]
+        new_lockers = []
+        for i, locker in enumerate(used_lockers):
+            if i >= new_count:
+                break
+            new_lockers.append(Locker(
+                id=f"{i+1:02d}",
+                user_id=locker.user_id,
+                expire_date=locker.expire_date,
+                locker_status=locker.locker_status,
+                extended=locker.extended
+            ))
+        for i in range(len(new_lockers), new_count):
+            new_lockers.append(Locker(
                 id=f"{i+1:02d}",
                 user_id="",
                 expire_date="",
                 locker_status="empty",
                 extended=False
             ))
-
-        # 현재 사물함 개수보다 줄이는 경우
-        elif new_count < current_count:
-            # 뒤에서부터 빈 사물함만 삭제
-            # current_used 체크로 사용 중인 사물함은 new_count 범위 안에 남게 됨
-            # 리스트 슬라이싱으로 new_count 개수만큼 남김
-            self.lockers = self.lockers[:new_count]
-        
-        # 사물함 ID 재정렬 (혹시 모르니) - 필요 없을 수도 있지만 안전하게
-        # for i, locker in enumerate(self.lockers):
-        #     locker.id = f"{i+1:02d}"
-
+        self.lockers = new_lockers
         self.save_lockers()
         return True, f"사물함 개수 {new_count}개로 변경 완료되었습니다."
     
