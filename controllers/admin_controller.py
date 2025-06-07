@@ -105,7 +105,7 @@ def accept_cancellation(current_datetime: datetime) -> int:
         return -1
 
     # 3-2. ca_id값 검증
-    if not re.fullmatch(r'^\d+$', ca_id):
+    if not re.fullmatch(r'^[1-9]\d*$', ca_id):
         print("[오류] 입력 형식에 맞지 않습니다.")
         return -2
 
