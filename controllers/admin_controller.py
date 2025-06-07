@@ -1,8 +1,27 @@
 import re
 from utils import read_csv, write_csv
 from constants import *
-from datetime import datetime
+from datetime import datetime, time
 from controllers.locker_controller import LockerSystem
+
+# 타임 정보 정의
+TIME_SLOTS = {
+    "00": (time(8, 0), time(8, 50)),
+    "01": (time(9, 0), time(9, 50)),
+    "02": (time(10, 0), time(10, 50)),
+    "03": (time(11, 0), time(11, 50)),
+    "04": (time(12, 0), time(12, 50)),
+    "05": (time(13, 0), time(13, 50)),
+    "06": (time(14, 0), time(14, 50)),
+    "07": (time(15, 0), time(15, 50)),
+    "08": (time(16, 0), time(16, 50)),
+    "09": (time(17, 0), time(17, 50)),
+    "10": (time(18, 0), time(18, 50)),
+    "11": (time(19, 0), time(19, 50)),
+    "12": (time(20, 0), time(20, 50)),
+    "13": (time(21, 0), time(21, 50)),
+    "14": (time(22, 0), time(22, 50))
+}
 
 def show_admin_menu(current_datetime: datetime):
     locker_system = LockerSystem()
@@ -24,7 +43,7 @@ def show_admin_menu(current_datetime: datetime):
             continue
 
         if choice == '1':
-            accept_cancellation()
+            accept_cancellation(current_datetime)
         elif choice == '2':
             locker_forced_eviction(locker_system, current_datetime)
         elif choice == '3':
@@ -35,33 +54,53 @@ def show_admin_menu(current_datetime: datetime):
             locker_system.save_lockers()
             break
 
-def accept_cancellation()->int:
+def accept_cancellation(current_datetime: datetime) -> int:
     cancellations = read_csv(CANCELLATION_PATH)
+    reservations = read_csv(RESERVATION_PATH)
 
-    # 1. 취소 신청 데이터 리스트 출력
+    # 1. 현재 날짜와 시간 이전 수업에 대한 취소 요청 자동 삭제
+    valid_cancellations = []
+    for ca in cancellations:
+        class_id = ca['class_id']
+        # 해당 class_id의 수업 정보 찾기
+        reservation = next((r for r in reservations if r['아이디'].strip() == class_id), None)
+        if reservation:
+            class_date = reservation['날짜'].strip()
+            class_time = reservation['타임'].strip()
+            # 날짜와 시간 비교
+            class_dt = datetime.strptime(class_date, "%y%m%d")
+            if class_time in TIME_SLOTS:
+                start_time = TIME_SLOTS[class_time][0]
+                class_dt = datetime.combine(class_dt.date(), start_time)
+                if class_dt > current_datetime:
+                    valid_cancellations.append(ca)
+    cancellations = valid_cancellations
+    write_csv(CANCELLATION_PATH, cancellations)
+
+    # 2. 취소 신청 데이터 리스트 출력
     print("───────────────────────────────────────────────")
     print("[ 수업 취소 승인 ]")
     print("───────────────────────────────────────────────")
     print("취소 신청 ID | 수업 ID | 회원 이름 |")
     print("───────────────────────────────────────────────")
     for ca in cancellations:
-        print(f"{ca['cancellation_id']:<8}{ca['class_id']:<9}{ca['user_name']:<9}")
+        print(f"        {ca['cancellation_id']:<8}{ca['class_id']:<9}{ca['user_name']:<9}")
     print("───────────────────────────────────────────────")
 
-    # 2. 승인할 수업 취소 ID 입력
+    # 3. 승인할 수업 취소 ID 입력
     ca_id = input("승인할 취소 신청 ID를 입력하세요 >> ")
 
-    # 3. 취소 신청 유효성 검증
+    # 3-1. 취소 신청 유효성 검증
     if not cancellations:
         print("[오류] 현재 취소 신청된 수업이 없습니다.")
         return -1
 
-    # 4. ca_id값 검증
+    # 3-2. ca_id값 검증
     if not re.fullmatch(r'^\d+$', ca_id):
         print("[오류] 입력 형식에 맞지 않습니다.")
         return -2
 
-    # 5. 취소 신청 데이터에서 해당 항목 찾기
+    # 3-3. 취소 신청 데이터에서 해당 항목 찾기
     for cancellation in cancellations:
         if cancellation['cancellation_id'] == ca_id:
             ca_class_id = cancellation['class_id']
@@ -73,10 +112,7 @@ def accept_cancellation()->int:
         print("[오류] 유효하지 않은 취소 신청 ID 입니다.")
         return -3
 
-    # 데이터 로드
-    reservations = read_csv(RESERVATION_PATH)
-
-    # 6. 수업 데이터에서 해당 회원 제거
+    # 4. 수업 데이터에서 해당 회원 제거
     for reservation in reservations:
         if reservation['아이디'].strip() == ca_class_id:
             raw_users = reservation['수강 회원 id 리스트'].strip().strip('"')
@@ -85,7 +121,7 @@ def accept_cancellation()->int:
                 user_ids.remove(ca_member_id)
                 reservation['수강 회원 id 리스트'] = ",".join(user_ids)
 
-    # 7. 파일 저장
+    # 5. 파일 저장
     write_csv(CANCELLATION_PATH, cancellations)
     write_csv(RESERVATION_PATH, reservations)
 
