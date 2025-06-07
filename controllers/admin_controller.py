@@ -3,6 +3,7 @@ from utils import read_csv, write_csv
 from constants import *
 from datetime import datetime, time
 from controllers.locker_controller import LockerSystem
+import csv
 
 # 타임 정보 정의
 TIME_SLOTS = {
@@ -75,7 +76,15 @@ def accept_cancellation(current_datetime: datetime) -> int:
                 if class_dt > current_datetime:
                     valid_cancellations.append(ca)
     cancellations = valid_cancellations
-    write_csv(CANCELLATION_PATH, cancellations)
+    
+    # 파일 저장
+    if not cancellations:
+        # 헤더만 남기고 데이터는 비우기
+        with open(CANCELLATION_PATH, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=["cancellation_id", "class_id", "user_id", "user_name"])
+            writer.writeheader()
+    else:
+        write_csv(CANCELLATION_PATH, cancellations)
 
     # 2. 취소 신청 데이터 리스트 출력
     print("───────────────────────────────────────────────")
@@ -122,7 +131,13 @@ def accept_cancellation(current_datetime: datetime) -> int:
                 reservation['수강 회원 id 리스트'] = ",".join(user_ids)
 
     # 5. 파일 저장
-    write_csv(CANCELLATION_PATH, cancellations)
+    if not cancellations:
+        # 헤더만 남기고 데이터는 비우기
+        with open(CANCELLATION_PATH, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=["cancellation_id", "class_id", "user_id", "user_name"])
+            writer.writeheader()
+    else:
+        write_csv(CANCELLATION_PATH, cancellations)
     write_csv(RESERVATION_PATH, reservations)
 
     print("취소 승인 완료되었습니다.")
