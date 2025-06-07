@@ -42,7 +42,7 @@ def login(user_type: str):
         pw = views.prompt_pw()
 
         if user_type == USER_TYPE_ADMIN:
-            if pw == "0000":
+            if pw == "Admin@1234":
                 user = None
                 break
             else:
