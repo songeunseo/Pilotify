@@ -56,8 +56,16 @@ def show_admin_menu(current_datetime: datetime):
             break
 
 def accept_cancellation(current_datetime: datetime) -> int:
-    cancellations = read_csv(CANCELLATION_PATH)
-    reservations = read_csv(RESERVATION_PATH)
+    try:
+        cancellations = read_csv(CANCELLATION_PATH)
+    except FileNotFoundError:
+        print("[오류] 취소 신청 파일이 존재하지 않습니다.")
+        return -1
+    try:
+        reservations = read_csv(RESERVATION_PATH)
+    except FileNotFoundError:
+        print("[오류] 수업 예약 파일이 존재하지 않습니다.")
+        return -2
 
     # 1. 현재 날짜와 시간 이전 수업에 대한 취소 요청 자동 삭제
     valid_cancellations = []
@@ -78,13 +86,11 @@ def accept_cancellation(current_datetime: datetime) -> int:
     cancellations = valid_cancellations
     
     # 파일 저장
-    if not cancellations:
-        # 헤더만 남기고 데이터는 비우기
-        with open(CANCELLATION_PATH, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=["cancellation_id", "class_id", "user_id", "user_name"])
-            writer.writeheader()
-    else:
+    try:
         write_csv(CANCELLATION_PATH, cancellations)
+    except Exception as e:
+        print(f"[오류] 취소 신청 파일을 저장하는 중 오류 발생: {e}")
+        return -3
 
     # 2. 취소 신청 데이터 리스트 출력
     print("───────────────────────────────────────────────")
@@ -131,14 +137,12 @@ def accept_cancellation(current_datetime: datetime) -> int:
                 reservation['수강 회원 id 리스트'] = ",".join(user_ids)
 
     # 5. 파일 저장
-    if not cancellations:
-        # 헤더만 남기고 데이터는 비우기
-        with open(CANCELLATION_PATH, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=["cancellation_id", "class_id", "user_id", "user_name"])
-            writer.writeheader()
-    else:
+    try:
         write_csv(CANCELLATION_PATH, cancellations)
-    write_csv(RESERVATION_PATH, reservations)
+        write_csv(RESERVATION_PATH, reservations)
+    except Exception as e:
+        print(f"[오류] 파일을 저장하는 중 오류 발생: {e}")
+        return -4
 
     print("취소 승인 완료되었습니다.")
     return 0

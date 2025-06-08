@@ -37,7 +37,12 @@ def read_csv(filepath):
 
 def write_csv(filepath, data):
     with open(filepath, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=data[0].keys())
-        writer.writeheader()
-        writer.writerows(data)
+        if not data:
+            # 데이터가 비어있는 경우 기본 헤더만 작성
+            writer = csv.DictWriter(f, fieldnames=["cancellation_id", "class_id", "user_id", "user_name"])
+            writer.writeheader()
+        else:
+            writer = csv.DictWriter(f, fieldnames=data[0].keys())
+            writer.writeheader()
+            writer.writerows(data)
 

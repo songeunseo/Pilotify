@@ -47,13 +47,7 @@ class LockerSystem:
             'extended': str(l.extended)
         } for l in self.lockers]
         try:
-            if not data:
-                # 데이터가 없으면 헤더만 남기기
-                with open(LOCKER_PATH, 'w', newline='', encoding='utf-8') as f:
-                    writer = csv.DictWriter(f, fieldnames=['id', 'user_id', 'expire_date', 'locker_status', 'extended'])
-                    writer.writeheader()
-            else:
-                write_csv(LOCKER_PATH, data)
+            write_csv(LOCKER_PATH, data)
         except Exception as e:
             print(f"[오류] 사물함 데이터를 저장하는 중 오류 발생: {e}")
 
