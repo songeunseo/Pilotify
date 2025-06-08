@@ -61,9 +61,10 @@ class LockerSystem:
         """남은 일수를 반환합니다."""
         if locker.user_id != "":
             expire_date = datetime.strptime(locker.expire_date, "%y%m%d")
-            remaining_days = expire_date - current_datetime
+            current_date = datetime.strptime(current_datetime.strftime("%y%m%d"), "%y%m%d")
+            remaining_days = expire_date - current_date
 
-            if(remaining_days.days<0):
+            if (remaining_days.days<0):
                 locker.user_id = ""
                 locker.expire_date = ''
             
