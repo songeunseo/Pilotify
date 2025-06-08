@@ -200,7 +200,9 @@ class MemberSystem:
         # 1. 현재 회원이 이미 사물함을 사용 중인지 확인
         existing_locker = locker_system.get_user_locker(self.user_id)
         if existing_locker:
-            print(f"[오류] 이미 {existing_locker.id}번 사물함 이용 중입니다.")
+            expire_date = datetime.strptime(existing_locker.expire_date, "%y%m%d").date()
+            remaining_days = (expire_date - self.current_datetime.date()).days
+            print(f"[오류] 이미 {existing_locker.id}번 사물함 이용 중입니다.\n남은 일수: {remaining_days}일")
             return
 
         # 2. 신청일 포함 7일간 수업 예약이 2타임 이상인지 확인
@@ -227,7 +229,12 @@ class MemberSystem:
         if success:
             print(f"{message}")
         else:
-            print(f"[오류] {message}")
+            if '\n' in message:
+                main_msg, detail_msg = message.split('\n', 1)
+                print(f"[오류] {main_msg}")
+                print(detail_msg)
+            else:
+                print(f"[오류] {message}")
             
     def extend_locker(self):
         print("───────────────────────────────────────")
